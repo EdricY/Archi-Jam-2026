@@ -1,0 +1,71 @@
+Map Size = 48x32 tiles
+
+Tile Size = 16x16 pixels
+
+Tile Keys
+ - metal.png = 64,64,64,255
+ - Metal Door-1.png.png = 64,74,64,255
+ - wood.png = 127,106,0,255
+ - wooda.png = 127,106,10,255
+ - woodb.png = 127,106,20,255
+ - Wood Door-1.png.png = 127,51,0,255
+ - wood-door-down.png = 127,51,10,255
+ - shelf-v.png = 127,51,1,255
+ - shelf-h.png = 127,51,2,255
+ - tile-white.png = 181,181,181,255
+ - counter.png = 255,0,0,255
+ - glass-display.png = 0,255,255,255
+ - carpet.png = 255,106,0,255
+ - teller.png = 107,42,0,255
+ - teller-left.png = 107,42,10,255
+ - teller-down.png = 107,42,20,255
+ - wall-brown.png = 73,29,0,255
+ - plant.png = 0,255,33,255
+ - couch.png = 0,62,143,255
+ - stall.png = 255,140,220,255
+ - Safe Closed-1.png.png = 10,0,0,255
+ - Register Closed-1.png.png = 20,0,0,255
+ - container-red = 170,0,0,255
+ - container-blue = 0,21,145,255
+ - metal-dark.png = 48,48,48,255
+ - water.png = 0,38,225,255
+
+Places to steal from:
+- Mansion
+	- Marble - white/gold
+	- Carpet - dark red
+- Ship
+	- Water
+	- Wood
+- Casino
+	- Carpet - dark red patterns???
+	- Slot machines/roulette table
+- Plane
+	- Cargo - dark green/brown, tarps
+	- Cages
+
+
+- Store
+	- Tile - white marks
+	- Shelving
+	- Register
+- Warehouse
+	- Grayscale
+	- Wood
+	- Metal
+	- Safe
+- Museum
+	- Glass displays
+	- Tile - white
+- Bank
+	- Tile - checker
+	- Teller desks
+	- Vault
+
+- Freighter
+	- Various color metal - red/blue accents
+- Mall
+	- Tile, solid color
+	- Plants
+	- Stores
+		- Shoes, clothing, games, coffee

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Heist</title>
+</head>
+
+<body>
+  <div id="menuDiv" class="outer">
+    <h1>Bad Guy Simulator: The Heist</h1>
+    <button class="menuButton" id="playButton">Play!</button>
+    <button class="menuButton" id="instructionsButton">Instructions</button>
+    <button class="menuButton" id="creditsButton">Credits</button>
+  </div>
+  <div id="instructionsDiv" class="outer nodisplay">
+    <div>
+      <p>Use the Arrow Keys to move.
+      <p>
+      <p>Use Z to run faster.</p>
+      <p>Use X to stealth in place.</p>
+      <p>Use Space to interact with doors and locks.</p>
+      </p>
+    </div>
+    <p>
+      When picking a lock, use numbers 1-6 to guess the correct combination for the lock.<br>
+      The position of the pin is a slight indicator for it's number.
+    </p>
+    <div>
+      <input type="checkbox" id="holdCheckbox">
+      <label for="holdCheckbox"> I have a cool keyboard</label>
+    </div>
+    <button class="menuButton" id="instructionBackButton">Menu</button>
+  </div>
+  <div id="landingDiv" class="outer nodisplay">
+    <div class="row" id="goDiv">
+      <div class="row justifystart">
+        <button class="menuButton" id="landingMenuButton">Menu</button>
+        <button class="menuButton" id="landingUpgradesButton">The Market</button>
+      </div>
+      <div class="row justifyend">
+        <canvas id="preview" width="768" height="512"></canvas>
+        <button id="goBtn" disabled class="menuButton">Go!</button>
+      </div>
+    </div>
+    <div id="levelSquares">
+      <!-- <div class="square"><div>1</div></div> -->
+    </div>
+  </div>
+  <div id="creditsDiv" class="outer nodisplay">
+    <h1>Hi, thanks for playing our game!</h1>
+    <h2>
+      This game was made by:
+      <ul>
+        <li>Edric Yu (Programmer)</li>
+        <li>Ryan Jones (Programmer)</li>
+        <li>Noah Lindsey (Asset/Level Designer)</li>
+        <li>Chris Arpin (Asset/Audio Designer)</li>
+        <li>Background Music by Lee Rosevere: [<a href="https://bit.ly/2YXe0yq" target="_blank">link</a>]</li>
+      </ul>
+    </h2>
+    <button class="menuButton" id="creditsBackButton">Menu</button>
+  </div>
+  <div id="upgradesDiv" class="outer nodisplay">
+    <h1>The Market</h1>
+    <div id="shopMessage">
+      <p style="font-size: 2px;">*Per Electronic Arts (EA)'s profitable game platform philosophy we will be charging
+        inordinate amounts of money for you to access this DLC</p>
+      <h2>New DLC coming soon!*</h2>
+    </div>
+    <span style="font-size: 32px; display: flex;">Wallet: $<div id="wallet"></div></span>
+    <p></p>
+    <div class="purchase">
+      Increased Stamina ($500)
+      <button id="purchaseStaminabtn" class="menuButton">Buy</button>
+    </div>
+    <div class="purchase">
+      Decreased Guard Vision ($500)
+      <button id="purchaseGuardVisionbtn" class="menuButton">Buy</button>
+    </div>
+    <div class="purchase">
+      Increased Health ($500)
+      <button id="purchaseHealthbtn" class="menuButton">Buy</button>
+    </div>
+    <div class="purchase">
+      Decreased Guard Accuracy ($500)
+      <button id="purchaseGuardAccuracybtn" class="menuButton">Buy</button>
+    </div>
+    <div class="purchase">
+      One Less Lock Pin ($1000)
+      <button id="purchaseLockbtn" class="menuButton">Buy</button>
+    </div>
+    <button class="menuButton" id="shopBackButton">Back</button>
+  </div>
+  <div id="canvasContainer" class="outer nodisplay">
+    <canvas id="canvas" width="768" height="576"></canvas>
+  </div>
+</body>
+<canvas id="mapLoader" hidden width="48" height="32"></canvas>
+<canvas id="collisionCanvas" hidden width="768" height="512"></canvas>
+<canvas id="floorCanvas" hidden width="768" height="512"></canvas>
+<canvas id="playerCanvas" hidden width="768" height="512"></canvas>
+
+<img hidden id='map0' src='src/assets/map0.png' alt='img'>
+<img hidden id='map1' src='src/assets/map1.png' alt='img'>
+<img hidden id='map2' src='src/assets/map2.png' alt='img'>
+<img hidden id='map3' src='src/assets/map3.png' alt='img'>
+<img hidden id='map4' src='src/assets/map4.png' alt='img'>
+<img hidden id='map5' src='src/assets/map5.png' alt='img'>
+<img hidden id='map6' src='src/assets/map6.png' alt='img'>
+<img hidden id='map7' src='src/assets/map7.png' alt='img'>
+<img hidden id='map8' src='src/assets/map8.png' alt='img'>
+<img hidden id='map9' src='src/assets/map9.png' alt='img'>
+<img hidden id='map10' src='src/assets/map10.png' alt='img'>
+<img hidden id='map11' src='src/assets/map11.png' alt='img'>
+<img hidden id='map12' src='src/assets/map12.png' alt='img'>
+<img hidden id='map13' src='src/assets/map13.png' alt='img'>
+<img hidden id='map14' src='src/assets/map14.png' alt='img'>
+<img hidden id='tile0' src='src/assets/tile0.png' alt='img'>
+<img hidden id='metal' src='src/assets/metal.png' alt='img'>
+<img hidden id='metal-dark' src='src/assets/metal-dark.png' alt='img'>
+<img hidden id='wood' src='src/assets/wood.png' alt='img'>
+<img hidden id='wood_2' src='src/assets/wood_2.png' alt='img'>
+<img hidden id='wooda' src='src/assets/wooda.png' alt='img'>
+<img hidden id='woodb' src='src/assets/woodb.png' alt='img'>
+<img hidden id='wood-door' src='src/assets/Wood Door-1.png.png' alt='img'>
+<img hidden id='wood-door-down' src='src/assets/wood-door-down.png' alt='img'>
+<img hidden id='metal-door' src='src/assets/Metal Door-1.png.png' alt='img'>
+<img hidden id='counter' src='src/assets/counter.png' alt='img'>
+<img hidden id='shelf-v' src='src/assets/shelf-v.png' alt='img'>
+<img hidden id='shelf-h' src='src/assets/shelf-h.png' alt='img'>
+<img hidden id='tile-white' src='src/assets/tile-white.png' alt='img'>
+<img hidden id='lockpin' src='src/assets/lockpin.png' alt='img'>
+<img hidden id='lockchamber' src='src/assets/lockchamber.png' alt='img'>
+<img hidden id='glass-display' src='src/assets/glass-display.png' alt='img'>
+<img hidden id='carpet' src='src/assets/carpet.png' alt='img'>
+<img hidden id='teller' src='src/assets/teller.png' alt='img'>
+<img hidden id='teller-left' src='src/assets/teller-left.png' alt='img'>
+<img hidden id='teller-down' src='src/assets/teller-down.png' alt='img'>
+<img hidden id='wall-brown' src='src/assets/wall-brown.png' alt='img'>
+<img hidden id='plant' src='src/assets/plant.png' alt='img'>
+<img hidden id='couch' src='src/assets/couch.png' alt='img'>
+<img hidden id='stall' src='src/assets/stall.png' alt='img'>
+<img hidden id='safe-closed' src='src/assets/Safe Closed-1.png.png' alt='img'>
+<img hidden id='safe-open' src='src/assets/Safe Open-1.png.png' alt='img'>
+<img hidden id='register-closed' src='src/assets/Register Closed-1.png.png' alt='img'>
+<img hidden id='register-open' src='src/assets/Register Open-1.png.png' alt='img'>
+<img hidden id='container-red' src='src/assets/container-red.png' alt='img'>
+<img hidden id='container-blue' src='src/assets/container-blue.png' alt='img'>
+<img hidden id='water' src='src/assets/water.png' alt='img'>
+<img hidden id='player_0' src='src/assets/player_0.png' alt='img'>
+<img hidden id='player_1' src='src/assets/player_1.png' alt='img'>
+<img hidden id='player_2' src='src/assets/player_2.png' alt='img'>
+<img hidden id='player_3' src='src/assets/player_3.png' alt='img'>
+<img hidden id='player_bag_0' src='src/assets/player_bag_0.png' alt='img'>
+<img hidden id='player_bag_1' src='src/assets/player_bag_1.png' alt='img'>
+<img hidden id='player_bag_2' src='src/assets/player_bag_2.png' alt='img'>
+<img hidden id='player_bag_3' src='src/assets/player_bag_3.png' alt='img'>
+<img hidden id='enemy_0' src='src/assets/enemy_0.png' alt='img'>
+<img hidden id='enemy_1' src='src/assets/enemy_1.png' alt='img'>
+<img hidden id='enemy_2' src='src/assets/enemy_2.png' alt='img'>
+<img hidden id='enemy_3' src='src/assets/enemy_3.png' alt='img'>
+<img hidden id='bullet' src='src/assets/Bullet-1.png.png' alt='img'>
+
+<!-- TODO: include audio elements here -->
+<audio hidden id="safe_opening" src="src/assets/safe_opening.wav"></audio>
+<audio hidden id="alarm_sound" src="src/assets/alarm_sound.wav"></audio>
+<audio hidden id="background_music" src="src/assets/Lee_Rosevere_-_12_-_Dont_Trust_the_Cloud.wav"></audio>
+<audio hidden id="injury_0" src="src/assets/injury_0.wav"></audio>
+<audio hidden id="injury_1" src="src/assets/injury_1.wav"></audio>
+<audio hidden id="injury_2" src="src/assets/injury_2.wav"></audio>
+<audio hidden id="lock_picking_0" src="src/assets/lock_picking_0.wav"></audio>
+<audio hidden id="lock_picking_1" src="src/assets/lock_picking_1.wav"></audio>
+<audio hidden id="lock_picking_2" src="src/assets/lock_picking_2.wav"></audio>
+<audio hidden id="lock_picking_3" src="src/assets/lock_picking_3.wav"></audio>
+
+<script type="module" src="/src/main.js"></script>
+<!-- <script src="gamesetup.js" defer></script>
+<script src="input.js" defer></script>
+<script src="tiles.js" defer></script>
+<script src="state.js" defer></script>
+<script src="audio.js" defer></script>
+<script src="lockpick.js" defer></script>
+<script src="player.js" defer></script>
+<script src="interactives.js" defer></script>
+<script src="ai.js" defer></script>
+<script src="hud.js" defer></script>
+<script src="particles.js" defer></script>
+<script src="game.js" defer></script>
+<script src="shop.js" defer></script> -->
+
+
+</html>
