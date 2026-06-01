@@ -72,7 +72,7 @@ export class Player {
       if ((keys["z"] || keys["Shift"]) && this.stamina > 0) {
         this.speedy = true;
         this.speed = this.basespeed * 1.5;
-        this.stamina--;
+        // this.stamina--;
       } else {
         this.speedy = false;
         this.speed = this.basespeed;
@@ -120,6 +120,8 @@ export class Player {
         if (this.animationFrame >= 4) {
           this.animationFrame = 0;
         }
+
+        if (this.speedy) this.stamina--;
       }
 
       if (this.vy != 0 && this.vx != 0) {

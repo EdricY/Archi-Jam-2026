@@ -64,11 +64,6 @@ function tick() {
   lag += elapsed;
   while (lag >= MS_PER_UPDATE) {
     gameState.update();
-    if (gameState.state == gameState.MENU) {
-      stop_background_music();
-      requestAnimationFrame(tick); //awkward, sorry
-      return;
-    }
     lag -= MS_PER_UPDATE;
     redraw = true;
   }
