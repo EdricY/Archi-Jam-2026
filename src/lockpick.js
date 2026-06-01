@@ -41,7 +41,7 @@ export class LockpickWindow {
 
     this.update = function () {
       if (!this.active) return;
-      if (keys[27]) { //escape
+      if (keys["Escape"]) {
         this.active = false;
         lockPickProgress = 0;
         for (let i = 0; i < numPins; i++) {
@@ -108,52 +108,54 @@ export class LockpickWindow {
 }
 //97,98,99,100,101,102
 //49,50,51,52,53,54
-var customKeycodes = [49, 50, 51, 52, 53, 54]
+var customKeycodes = ["1", "2", "3", "4", "5", "6"]
 
 
 function getRandomPattern(numPins) {
   return shuffle([1, 2, 3, 4, 5, 6]).slice(0, numPins);
 }
 
-function LockChamber(x, seq, pinOffset = null) {
-  this.seq = seq;
-  this.w = PINW;
-  this.h = 96;
-  this.y = H / 2 - this.h / 2;
-  if (pinOffset) this.pinStart = this.y - pinOffset
-  else this.pinStart = this.y - randInt(0, 12);
-  this.pinY = this.pinStart;
-  this.pinYGoal = this.pinY;
-  this.x = x;
-  this.pulseTimer = 0;
-  this.draw = function (ctx) {
-    let pinX = this.x;
-    if (this.pulseTimer) {
-      pinX += -1 * Math.cos(1024 * this.pulseTimer)
-    }
-    ctx.drawImage(lockchamber, this.x, this.y)
-    ctx.drawImage(lockpin, pinX, this.pinY)
-  }
-
-  this.update = function () {
-    if (lockPickProgress > this.seq) {
-      this.pinYGoal = this.y - 20;
-      this.pulseTimer = 0;
-    }
-    else this.pinYGoal = this.pinStart;
-    let diff = this.pinYGoal - this.pinY;
-    if (Math.abs(diff) < 2) this.pinY = this.pinYGoal;
-    else this.pinY += 2 * Math.sign(diff);
-
-    this.pulseTimer = Math.max(0, this.pulseTimer - 1);
-  }
-
-  this.pulse = function () {
-    this.pulseTimer = 15;
-  }
-  this.reset = function () {
+class LockChamber {
+  constructor(x, seq, pinOffset = null) {
+    this.seq = seq;
+    this.w = PINW;
+    this.h = 96;
+    this.y = H / 2 - this.h / 2;
+    if (pinOffset) this.pinStart = this.y - pinOffset;
+    else this.pinStart = this.y - randInt(0, 12);
     this.pinY = this.pinStart;
-    this.pinYGoal = this.pinStart;
+    this.pinYGoal = this.pinY;
+    this.x = x;
     this.pulseTimer = 0;
+    this.draw = function (ctx) {
+      let pinX = this.x;
+      if (this.pulseTimer) {
+        pinX += -1 * Math.cos(1024 * this.pulseTimer);
+      }
+      ctx.drawImage(lockchamber, this.x, this.y);
+      ctx.drawImage(lockpin, pinX, this.pinY);
+    };
+
+    this.update = function () {
+      if (lockPickProgress > this.seq) {
+        this.pinYGoal = this.y - 20;
+        this.pulseTimer = 0;
+      }
+      else this.pinYGoal = this.pinStart;
+      let diff = this.pinYGoal - this.pinY;
+      if (Math.abs(diff) < 2) this.pinY = this.pinYGoal;
+      else this.pinY += 2 * Math.sign(diff);
+
+      this.pulseTimer = Math.max(0, this.pulseTimer - 1);
+    };
+
+    this.pulse = function () {
+      this.pulseTimer = 15;
+    };
+    this.reset = function () {
+      this.pinY = this.pinStart;
+      this.pinYGoal = this.pinStart;
+      this.pulseTimer = 0;
+    };
   }
 }

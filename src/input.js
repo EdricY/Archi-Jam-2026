@@ -1,13 +1,13 @@
 window.keys = {};
 window.lastKeys = {};
 
-onkeydown = e => {
-  let k = e.keyCode;
+window.onkeydown = e => {
+  let k = e.key;
   if (k == 32) e.preventDefault();
   keys[k] = true;
 }
 
-onkeyup = e => {
-  let k = e.keyCode;
+window.onkeyup = e => {
+  let k = e.key;
   keys[k] = false;
 }

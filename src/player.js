@@ -9,10 +9,10 @@ export const PLAYERHALFSIZE = PLAYERSIZE / 2;
 export const PHSZ = PLAYERHALFSIZE;
 export const SQRT2 = Math.sqrt(2);
 
-export const UP = 38
-export const DOWN = 40
-export const LEFT = 37
-export const RIGHT = 39
+export const UP = "ArrowUp"
+export const DOWN = "ArrowDown"
+export const LEFT = "ArrowLeft"
+export const RIGHT = "ArrowRight"
 
 export const PLAYERIMGS = [
   document.getElementById("player_0"),
@@ -69,7 +69,7 @@ export class Player {
         }
         return;
       }
-      if (keys[90] && this.stamina > 0) { //Z
+      if ((keys["z"] || keys["Shift"]) && this.stamina > 0) {
         this.speedy = true;
         this.speed = this.basespeed * 1.5;
         this.stamina--;
@@ -78,7 +78,7 @@ export class Player {
         this.speed = this.basespeed;
       }
 
-      if (keys[88] && this.stamina > 0) { //X
+      if ((keys['x'] || keys["Control"]) && this.stamina > 0) {
         this.stealthy = true;
         this.stealthTimer++;
         this.stamina--;
@@ -96,16 +96,16 @@ export class Player {
         }
       }
 
-      if (keys[UP]) {
+      if (keys[UP] || keys["w"]) {
         this.vy = -this.speed;
-      } else if (keys[DOWN]) {
+      } else if (keys[DOWN] || keys["s"]) {
         this.vy = this.speed;
       } else {
         this.vy = 0;
       }
-      if (keys[LEFT]) {
+      if (keys[LEFT] || keys["a"]) {
         this.vx = -this.speed;
-      } else if (keys[RIGHT]) {
+      } else if (keys[RIGHT] || keys["d"]) {
         this.vx = this.speed;
       } else {
         this.vx = 0;
@@ -169,7 +169,7 @@ export class Player {
       this.actionTarget = closestInteractionObject(this);
       if (this.actionTarget) {
         this.message = this.actionTarget.message;
-        if (keys[32] && !lastKeys[32]) {
+        if (keys[" "] && !lastKeys[" "]) {
           this.message = "";
           this.actionTarget.interact();
         }
