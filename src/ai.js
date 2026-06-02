@@ -29,11 +29,18 @@ export const ENEMYIMGS = [
   document.getElementById("enemy_3")
 ]
 
+const Actions = {
+  WALKING: 0,
+  PATHFINDING: 1,
+  TURNING: 2,
+  CHASING: 3,
+}
+
 export class Enemy {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.action = 0; // 0:walking, 1:pathfinding, 2:turning, 3:chasing
+    this.action = Actions.WALKING;
     this.alerted = false;
     this.timer = 30;
     this.theta = Math.random() * TAU - PI;
@@ -42,7 +49,7 @@ export class Enemy {
     this.animationFrame = 0;
     this.speed = this.basespeed;
     this.shootTimer = 0;
-    this.reloadTime = 25;
+    this.reloadTime = 15;
     this.questionMarkTimer = 0;
     this.rotateDirection = getRotationDirection();
     this.pfBullets = [];
@@ -86,13 +93,16 @@ export class Enemy {
       };
     }
 
-    if (this.alerted || this.withinVisibility(player)) {
+    if (this.withinVisibility(player)) {
       this.shootLOSBullets();
     }
 
-    if (alarm) {
+    if (this.alerted) {
+      this.shootLOSBullets(VISRADIUS * 2);
+    } else if (alarm) {
       this.shootLOSBullets(VISRADIUS / 3);
     }
+
 
     let dx = player.x - this.x;
     let dy = player.y - this.y;
@@ -104,7 +114,7 @@ export class Enemy {
       let theta = Math.atan2(dy, dx);
       let bx = this.x;
       let by = this.y;
-      this.action = 2;
+      this.action = Actions.TURNING;
       this.thetaGoal = theta;
       if (this.shootTimer <= 0) {
         this.bullets.push(new Bullet(bx, by, theta));
@@ -114,17 +124,17 @@ export class Enemy {
 
     this.questionMarkTimer--;
     //do action
-    if (this.action == 0) { //moving
+    if (this.action == Actions.WALKING) { //moving
       let collided = checkCollision(this);
       if (collided == true) {
-        this.action = 1;
+        this.action = Actions.PATHFINDING;
         this.timer = 30;
       } else {
         let lookaheadx = 48 * Math.cos(this.theta) + this.x;
         let lookaheady = 48 * Math.sin(this.theta) + this.y;
         let lookaheadtile = getTileFromPos(mapData, lookaheadx, lookaheady);
         if (!FLOORTILES.includes(lookaheadtile)) {
-          this.action = 1;
+          this.action = Actions.PATHFINDING;
           this.timer = 30;
         }
       }
@@ -134,15 +144,15 @@ export class Enemy {
         this.animationFrame = 0;
       }
 
-    } else if (this.action == 1) { //pathfinding
+    } else if (this.action == Actions.PATHFINDING) {
       if (this.timer == 30) this.shootPFBullets();
       if (this.pfBullets.length <= 0 || this.timer <= 0) {
         this.timer = 0;
-        this.action = 2;
+        this.action = Actions.TURNING;
       }
       this.timer--;
       this.animationFrame = 0;
-    } else if (this.action == 2) { //turning
+    } else if (this.action == Actions.TURNING) {
       let diff1 = this.thetaGoal - this.theta;
       let diff2 = diff1 - TAU;
       let diff3 = diff1 + TAU;
@@ -159,7 +169,7 @@ export class Enemy {
         if (this.timer > 0) this.action = 3;
       }
       this.animationFrame = 0;
-    } else if (this.action == 3) { //chasing
+    } else if (this.action == Actions.CHASING) {
       let collided = checkCollision(this);
       this.animationFrame += .2;
       if (this.animationFrame >= 4) {
@@ -168,7 +178,7 @@ export class Enemy {
       this.timer--;
       if (this.timer <= 0) {
         this.alerted = false;
-        this.action = 1;
+        this.action = Actions.PATHFINDING;
         this.questionMarkTimer = 20;
       }
     }
@@ -261,7 +271,7 @@ export class Enemy {
     }
     this.alerted = true;
     this.timer = 30;
-    this.action = 2;
+    this.action = Actions.TURNING;
     this.thetaGoal = theta;
   };
 
