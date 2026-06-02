@@ -1,3 +1,4 @@
+import { stop_background_music } from "./audio";
 import { gameDraw, gameInit, gameUpdate } from "./game";
 import { MAPIDS } from "./gamesetup";
 import { Entrance } from "./interactives";
@@ -239,6 +240,7 @@ function selectSquare(divID) {
 }
 
 export function returnToLanding() {
+  stop_background_music()
   mapData = [];
   enemies = [];
   collisionMap = [];

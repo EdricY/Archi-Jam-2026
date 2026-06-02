@@ -77,9 +77,10 @@ export class Entrance {
     this.done = false;
     this.message = "";
     setTimeout(() => this.message = "Return Home [Space]", 10000); //debug change me
-    this.interact = function () {
-      walletAmt += player.inventory;
-      returnToLanding();
-    };
+  }
+
+  interact() {
+    walletAmt += player.inventory;
+    returnToLanding();
   }
 }

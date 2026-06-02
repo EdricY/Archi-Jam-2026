@@ -53,132 +53,135 @@ export class Player {
     this.theta = 0;
     this.message = "";
     this.actionTarget = null;
-    this.draw = (ctx) => drawPlayer(ctx, this);
-    this.update = function () {
-      if (player.health <= 0) {
-        this.deathTimer--;
-        if (this.deathTimer <= 0) {
-          returnToLanding();
-        }
-        return;
-      }
-      if (lockpickWindow && lockpickWindow.active) {
-        this.stamina += .2;
-        if (this.stamina > maxStamina) {
-          this.stamina = maxStamina;
-        }
-        return;
-      }
-      if ((keys["z"] || keys["Shift"]) && this.stamina > 0) {
-        this.speedy = true;
-        this.speed = this.basespeed * 1.5;
-        // this.stamina--;
-      } else {
-        this.speedy = false;
-        this.speed = this.basespeed;
-      }
+  }
+  draw(ctx) {
 
-      if ((keys['x'] || keys["Control"]) && this.stamina > 0) {
-        this.stealthy = true;
-        this.stealthTimer++;
-        this.stamina--;
+    drawPlayer(ctx, this);
+  }
+  update() {
+    if (player.health <= 0) {
+      this.deathTimer--;
+      if (this.deathTimer <= 0) {
+        returnToLanding();
+      }
+      return;
+    }
+    if (lockpickWindow && lockpickWindow.active) {
+      this.stamina += .2;
+      if (this.stamina > maxStamina) {
+        this.stamina = maxStamina;
+      }
+      return;
+    }
+    if ((keys["z"] || keys["Shift"]) && this.stamina > 0) {
+      this.speedy = true;
+      this.speed = this.basespeed * 1.5;
+      // this.stamina--;
+    } else {
+      this.speedy = false;
+      this.speed = this.basespeed;
+    }
+
+    if ((keys['x'] || keys["Control"]) && this.stamina > 0) {
+      this.stealthy = true;
+      this.stealthTimer++;
+      this.stamina--;
+      this.animationFrame = 0;
+      return;
+    } else {
+      this.stealthy = false;
+      this.stealthTimer = 0;
+    }
+
+    if (!this.speedy) {
+      this.stamina += .2;
+      if (this.stamina > maxStamina) {
+        this.stamina = maxStamina;
+      }
+    }
+
+    if (keys[UP] || keys["w"]) {
+      this.vy = -this.speed;
+    } else if (keys[DOWN] || keys["s"]) {
+      this.vy = this.speed;
+    } else {
+      this.vy = 0;
+    }
+    if (keys[LEFT] || keys["a"]) {
+      this.vx = -this.speed;
+    } else if (keys[RIGHT] || keys["d"]) {
+      this.vx = this.speed;
+    } else {
+      this.vx = 0;
+    }
+
+    //do animation
+    if (this.vy == 0 && this.vx == 0) {
+      this.animationFrame = 0;
+    } else {
+      this.theta = Math.atan2(this.vy, this.vx);
+      this.animationFrame += .2;
+      if (this.animationFrame >= 4) {
         this.animationFrame = 0;
-        return;
-      } else {
-        this.stealthy = false;
-        this.stealthTimer = 0;
       }
 
-      if (!this.speedy) {
-        this.stamina += .2;
-        if (this.stamina > maxStamina) {
-          this.stamina = maxStamina;
-        }
-      }
+      if (this.speedy) this.stamina--;
+    }
 
-      if (keys[UP] || keys["w"]) {
-        this.vy = -this.speed;
-      } else if (keys[DOWN] || keys["s"]) {
-        this.vy = this.speed;
-      } else {
+    if (this.vy != 0 && this.vx != 0) {
+      this.vy /= SQRT2;
+      this.vx /= SQRT2;
+    }
+
+    // this.x += this.vx;
+    // this.y += this.vy;
+    if (this.vy >= 0) { //moving down
+      let y_cls = findYCollisionDown(this.y - PHSZ, this.vy, this.x - PHSZ, PLAYERSIZE, PLAYERSIZE);
+      if (y_cls == null) {
+        this.y += this.vy;
+      } else { //landed on something
         this.vy = 0;
+        this.y = y_cls.y + PHSZ;
       }
-      if (keys[LEFT] || keys["a"]) {
-        this.vx = -this.speed;
-      } else if (keys[RIGHT] || keys["d"]) {
-        this.vx = this.speed;
-      } else {
+    } else { //moving up
+      let y_cls = findYCollisionUp(this.y - PHSZ, this.vy, this.x - PHSZ, PLAYERSIZE, PLAYERSIZE);
+      this.midair = true;
+      if (y_cls == null) {
+        this.y += this.vy;
+      } else { //hit your head
+        this.vy = 0;
+        this.y = y_cls.y + PHSZ;
+      }
+    }
+
+    if (this.vx > 0) { //moving right
+      let x_cls = findXCollisionRight(this.x - PHSZ, this.vx, this.y - PHSZ, PLAYERSIZE, PLAYERSIZE);
+      if (x_cls == null) this.x += this.vx;
+      else { //hit wall
         this.vx = 0;
+        this.x = x_cls.x + PHSZ;
       }
-
-      //do animation
-      if (this.vy == 0 && this.vx == 0) {
-        this.animationFrame = 0;
-      } else {
-        this.theta = Math.atan2(this.vy, this.vx);
-        this.animationFrame += .2;
-        if (this.animationFrame >= 4) {
-          this.animationFrame = 0;
-        }
-
-        if (this.speedy) this.stamina--;
+    } else if (this.vx < 0) { //moving left
+      let x_cls = findXCollisionLeft(this.x - PHSZ, this.vx, this.y - PHSZ, PLAYERSIZE, PLAYERSIZE);
+      if (x_cls == null) this.x += this.vx;
+      else { //hit wall
+        this.vx = 0;
+        this.x = x_cls.x + PHSZ;
       }
+    }
 
-      if (this.vy != 0 && this.vx != 0) {
-        this.vy /= SQRT2;
-        this.vx /= SQRT2;
-      }
-
-      // this.x += this.vx;
-      // this.y += this.vy;
-      if (this.vy >= 0) { //moving down
-        let y_cls = findYCollisionDown(this.y - PHSZ, this.vy, this.x - PHSZ, PLAYERSIZE, PLAYERSIZE);
-        if (y_cls == null) {
-          this.y += this.vy;
-        } else { //landed on something
-          this.vy = 0;
-          this.y = y_cls.y + PHSZ;
-        }
-      } else { //moving up
-        let y_cls = findYCollisionUp(this.y - PHSZ, this.vy, this.x - PHSZ, PLAYERSIZE, PLAYERSIZE);
-        this.midair = true;
-        if (y_cls == null) {
-          this.y += this.vy;
-        } else { //hit your head
-          this.vy = 0;
-          this.y = y_cls.y + PHSZ;
-        }
-      }
-
-      if (this.vx > 0) { //moving right
-        let x_cls = findXCollisionRight(this.x - PHSZ, this.vx, this.y - PHSZ, PLAYERSIZE, PLAYERSIZE);
-        if (x_cls == null) this.x += this.vx;
-        else { //hit wall
-          this.vx = 0;
-          this.x = x_cls.x + PHSZ;
-        }
-      } else if (this.vx < 0) { //moving left
-        let x_cls = findXCollisionLeft(this.x - PHSZ, this.vx, this.y - PHSZ, PLAYERSIZE, PLAYERSIZE);
-        if (x_cls == null) this.x += this.vx;
-        else { //hit wall
-          this.vx = 0;
-          this.x = x_cls.x + PHSZ;
-        }
-      }
-
-      //interactions
-      // if (this.inventory) return;
-      this.actionTarget = closestInteractionObject(this);
-      if (this.actionTarget) {
-        this.message = this.actionTarget.message;
-        if (keys[" "] && !lastKeys[" "]) {
-          this.message = "";
-          this.actionTarget.interact();
-        }
-      } else {
+    //interactions
+    // if (this.inventory) return;
+    this.actionTarget = closestInteractionObject(this);
+    if (this.actionTarget) {
+      this.message = this.actionTarget.message;
+      if (keys[" "] && !lastKeys[" "]) {
         this.message = "";
+        this.actionTarget.interact();
       }
-    };
+    } else {
+      this.message = "";
+    }
   }
 }
 

@@ -13,24 +13,24 @@ class Turret {
     this.y = y;
     this.theta = 0;
     this.rotateDir = randInt(0, 2) % 2 == 0 ? -1 : 1;
-    this.shoot = function () {
-      addBullet(this);
-    };
-    this.update = function () {
-      if (this.rotateDir > 0) {
-        this.theta += ROTATEDIST;
-      } else {
-        this.theta -= ROTATEDIST;
-      }
-      if (Math.abs(this.theta) > PI) this.rotateDir *= -1; //reset direction
-    };
-    this.draw = function (ctx) {
-      ctx.fillStyle = "green";
-      ctx.fillRect(this.x, this.y, this.size, this.size);
-      ctx.moveTo(this.x, this.y);
-      ctx.fillStyle = "red";
-      ctx.lineTo(100 * Math.cos(this.theta), 100 * Math.sin(this.theta));
-    };
+  }
+  shoot() {
+    addBullet(this);
+  };
+  update() {
+    if (this.rotateDir > 0) {
+      this.theta += ROTATEDIST;
+    } else {
+      this.theta -= ROTATEDIST;
+    }
+    if (Math.abs(this.theta) > PI) this.rotateDir *= -1; //reset direction
+  }
+  draw(ctx) {
+    ctx.fillStyle = "green";
+    ctx.fillRect(this.x, this.y, this.size, this.size);
+    ctx.moveTo(this.x, this.y);
+    ctx.fillStyle = "red";
+    ctx.lineTo(100 * Math.cos(this.theta), 100 * Math.sin(this.theta));
   }
 }
 
@@ -49,14 +49,16 @@ function updateTurrets() {
 
 
 
-function Bullet(x, y, t) {
-  this.flag = false;
-  this.id = i;
-  this.x = x;
-  this.y = y;
-  this.theta = t;
-  this.bulletSpeed = 10;
-  this.update = function () {
+class Bullet {
+  constructor(x, y, t) {
+    this.flag = false;
+    this.id = i;
+    this.x = x;
+    this.y = y;
+    this.theta = t;
+    this.bulletSpeed = 10;
+  }
+  update() {
     if (collisionMap[this.x][this.y]) {
       this.update = null;
     }

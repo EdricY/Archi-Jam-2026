@@ -2,10 +2,11 @@
 import { makeEnemies } from "./ai.js";
 import { play_background_music, stop_background_music } from "./audio.js";
 import { ctx, randInt } from "./gamesetup.js";
-import { Player } from "./player.js";
+import { Player, Point } from "./player.js";
 import { gameState } from "./state.js";
 import { Particles } from "./particles.js";
 import { drawHUD } from "./hud.js";
+import { TILESIZE } from "./tiles.js";
 
 const UPDATES_PER_SEC = 60;
 const MS_PER_UPDATE = 1000 / UPDATES_PER_SEC;
@@ -39,6 +40,23 @@ export function gameDraw() {
   if (lockpickWindow) lockpickWindow.draw(ctx);
 
   drawHUD(ctx);
+
+  // DEBUG
+  ctx.fillStyle = "red";
+  let en = enemies[0]
+  // for (let r = 0; r < collisionMap.length; r++) {
+  //   for (let c = 0; c < collisionMap[r].length; c++) {
+  //     if (en.withinVisibility(new Point(c, r))) {
+  //       ctx.fillRect(c, r, 1, 1);
+  //     }
+  //   }
+  // }
+
+  // if (en.withinVisibility()) {
+  //   ctx.fillText("VISIBLE", 10, 50);
+  // }
+  // ctx.font = "14px serif";
+  // ctx.fillText(`Player: (${player.x}, ${player.y})`, 10, 20);
 }
 
 export function gameUpdate() {
