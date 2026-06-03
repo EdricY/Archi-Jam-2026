@@ -1,12 +1,13 @@
 
-import { makeEnemies } from "./ai.js";
+import { makeEnemies, PI } from "./ai.js";
 import { play_background_music, stop_background_music } from "./audio.js";
-import { ctx, randInt } from "./gamesetup.js";
+import { ctx, H, randInt, W } from "./gamesetup.js";
 import { Player, Point } from "./player.js";
 import { gameState } from "./state.js";
 import { Particles } from "./particles.js";
 import { drawHUD } from "./hud.js";
 import { TILESIZE } from "./tiles.js";
+import { getSlidePixelsGenerator } from "./slide.js";
 
 const UPDATES_PER_SEC = 60;
 const MS_PER_UPDATE = 1000 / UPDATES_PER_SEC;
@@ -42,8 +43,27 @@ export function gameDraw() {
   drawHUD(ctx);
 
   // DEBUG
-  ctx.fillStyle = "red";
-  let en = enemies[0]
+  // ctx.fillStyle = "rgba(255, 0, 0, .2)";
+  // let en = enemies[0]
+  // let thetas = [en.theta - PI / 8, en.theta - PI / 16, en.theta, en.theta + PI / 16, en.theta + PI / 8]
+  // ctx.beginPath();
+  // ctx.moveTo(en.x, en.y);
+  // for (let theta of thetas) {
+  //   let generator = getSlidePixelsGenerator(en.x, en.y, theta)
+  //   let pt = null;
+  //   while (true) {
+  //     pt = generator.next().value.alignedPt;
+  //     if (!pt) break;
+  //     if (pt.x < 0 || pt.x >= W || pt.y < 0 || pt.y >= H) break;
+  //     if (collisionMap[pt.y][pt.x]) {
+  //       break;
+  //     };
+  //   }
+  //   ctx.lineTo(pt.x, pt.y);
+  // }
+  // ctx.closePath();
+  // ctx.fill();
+
   // for (let r = 0; r < collisionMap.length; r++) {
   //   for (let c = 0; c < collisionMap[r].length; c++) {
   //     if (en.withinVisibility(new Point(c, r))) {

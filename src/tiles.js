@@ -219,7 +219,7 @@ export function getTileID(colorstr) {
   let tileid = TILES[colorstr];
   if (tileid) return tileid;
 
-  // no perfect match, find closest (can result from different browsers doing rounding/compression)
+  // no perfect match, find closest (can result from different browsers doing rounding/compression or mistakes in the map image)
   let colorarr1 = getColorArr(colorstr);
   let min = Infinity;
   let mindex = 0;

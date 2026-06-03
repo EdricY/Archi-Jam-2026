@@ -1,9 +1,10 @@
-import { mod, randInt } from "./gamesetup";
+import { H, mod, randInt, W } from "./gamesetup";
 import { findXCollisionLeft, findXCollisionRight, findYCollisionDown, findYCollisionUp, PHSZ, PLAYERSIZE } from "./player";
 import { ENEMY_SPAWN_LOCATIONS } from "./state";
 import { Particles } from "./particles.js";
 import { FLOORTILES, getTileFromPos } from "./tiles.js";
 import { play_injury_noise } from "./audio.js";
+import { getSlidePixelsGenerator, moveObjBy } from "./slide.js";
 
 window.enemies = [];
 export const PI = Math.PI;
@@ -28,6 +29,9 @@ export const ENEMYIMGS = [
   document.getElementById("enemy_2"),
   document.getElementById("enemy_3")
 ]
+
+const flashlightGrad = document.getElementById("flashlight-gradient")
+
 
 const Actions = {
   WALKING: 0,
@@ -125,7 +129,8 @@ export class Enemy {
     this.questionMarkTimer--;
     //do action
     if (this.action == Actions.WALKING) { //moving
-      let collided = checkCollision(this);
+      let collided = moveObjBy(this, this.theta, this.speed);
+      // let collided = checkCollision(this);
       if (collided == true) {
         this.action = Actions.PATHFINDING;
         this.timer = 30;
@@ -170,7 +175,9 @@ export class Enemy {
       }
       this.animationFrame = 0;
     } else if (this.action == Actions.CHASING) {
-      let collided = checkCollision(this);
+      // let collided = checkCollision(this);
+      moveObjBy(this, this.theta, this.speed);
+
       this.animationFrame += .2;
       if (this.animationFrame >= 4) {
         this.animationFrame = 0;
@@ -198,8 +205,8 @@ export class Enemy {
     ctx.translate(f_x, f_y);
     ctx.rotate(rotation);
     ctx.drawImage(img, -PLAYERSIZE, -PLAYERSIZE);
-    this.drawVisibility(ctx);
     ctx.resetTransform();
+    this.drawVisibility(ctx);
 
     if (this.alerted) {
       ctx.fillStyle = "red";
@@ -275,25 +282,57 @@ export class Enemy {
     this.thetaGoal = theta;
   };
 
+  static visThetas = [
+    -TAU / 12,
+    -TAU / 18,
+    -TAU / 36,
+    0,
+    TAU / 36,
+    TAU / 18,
+    TAU / 12
+  ];
+  static visCtx = new OffscreenCanvas(W, H).getContext("2d");
   drawVisibility(ctx) {
-    ctx.fillStyle = "yellow";
-    // if (this.withinVisibility(player)) ctx.fillStyle = "red"; //debug
-    ctx.globalAlpha = 0.3;
-    ctx.beginPath();
-    ctx.moveTo(-7, -10);
-    ctx.arc(-7, -10, VISRADIUS, -VISHALFWIDTH - PI / 2, VISHALFWIDTH - PI / 2);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.globalAlpha = 1.0;
+    let visCtx = Enemy.visCtx;
+    visCtx.fillStyle = "rgba(251, 255, 0, 0.5)";
+    visCtx.clearRect(0, 0, W, H);
+    let lightx = this.x + 10 * Math.cos(this.theta);
+    let lighty = this.y + 10 * Math.sin(this.theta);
+    lightx += 7 * Math.cos(this.theta - PI / 2);
+    lighty += 7 * Math.sin(this.theta - PI / 2);
+
+    visCtx.beginPath();
+    visCtx.moveTo(lightx, lighty);
+    for (let delta of Enemy.visThetas) {
+      let theta = this.theta + delta;
+      let generator = getSlidePixelsGenerator(lightx, lighty, theta)
+      let pt = null;
+      while (true) {
+        pt = generator.next().value.alignedPt;
+        if (!pt) break;
+        if (pt.x < 0 || pt.x >= W || pt.y < 0 || pt.y >= H) break;
+        if (collisionMap[pt.y][pt.x]) {
+          break;
+        };
+      }
+      visCtx.lineTo(pt.x, pt.y);
+    }
+    visCtx.closePath();
+    visCtx.fill();
+    visCtx.globalCompositeOperation = "destination-in";
+    visCtx.drawImage(flashlightGrad, lightx - 300, lighty - 300);
+    visCtx.globalCompositeOperation = "source-over";
+
+    ctx.drawImage(Enemy.visCtx.canvas, 0, 0);
+
   };
 
   withinVisibility(pt) {
     // TODO: also add a small circle around the guard
-    let lightx = this.x + 7 * Math.cos(this.theta);
-    let lighty = this.y + 7 * Math.sin(this.theta);
-    lightx += 10 * Math.cos(this.theta - PI / 2);
-    lighty += 10 * Math.sin(this.theta - PI / 2);
+    let lightx = this.x + 10 * Math.cos(this.theta);
+    let lighty = this.y + 10 * Math.sin(this.theta);
+    lightx += 7 * Math.cos(this.theta - PI / 2);
+    lighty += 7 * Math.sin(this.theta - PI / 2);
     let dx = pt.x - lightx;
     let dy = pt.y - lighty;
     let distSq = dx * dx + dy * dy;

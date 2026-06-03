@@ -1,4 +1,5 @@
 import { H, W } from "./gamesetup";
+import { moveObjBy } from "./slide";
 import { returnToLanding } from "./state";
 import { getTileFromPos } from "./tiles";
 
@@ -100,74 +101,30 @@ export class Player {
       }
     }
 
+    let yMotion = 0;
+    let xMotion = 0;
     if (keys[UP] || keys["w"]) {
-      this.vy = -this.speed;
+      yMotion = -1;
     } else if (keys[DOWN] || keys["s"]) {
-      this.vy = this.speed;
-    } else {
-      this.vy = 0;
+      yMotion = 1;
     }
     if (keys[LEFT] || keys["a"]) {
-      this.vx = -this.speed;
+      xMotion = -1;
     } else if (keys[RIGHT] || keys["d"]) {
-      this.vx = this.speed;
-    } else {
-      this.vx = 0;
+      xMotion = 1;
     }
 
-    //do animation
-    if (this.vy == 0 && this.vx == 0) {
+    if (yMotion == 0 && xMotion == 0) {
       this.animationFrame = 0;
     } else {
-      this.theta = Math.atan2(this.vy, this.vx);
+      this.theta = Math.atan2(yMotion, xMotion);
       this.animationFrame += .2;
       if (this.animationFrame >= 4) {
         this.animationFrame = 0;
       }
 
       if (this.speedy) this.stamina--;
-    }
-
-    if (this.vy != 0 && this.vx != 0) {
-      this.vy /= SQRT2;
-      this.vx /= SQRT2;
-    }
-
-    // this.x += this.vx;
-    // this.y += this.vy;
-    if (this.vy >= 0) { //moving down
-      let y_cls = findYCollisionDown(this.y - PHSZ, this.vy, this.x - PHSZ, PLAYERSIZE, PLAYERSIZE);
-      if (y_cls == null) {
-        this.y += this.vy;
-      } else { //landed on something
-        this.vy = 0;
-        this.y = y_cls.y + PHSZ;
-      }
-    } else { //moving up
-      let y_cls = findYCollisionUp(this.y - PHSZ, this.vy, this.x - PHSZ, PLAYERSIZE, PLAYERSIZE);
-      this.midair = true;
-      if (y_cls == null) {
-        this.y += this.vy;
-      } else { //hit your head
-        this.vy = 0;
-        this.y = y_cls.y + PHSZ;
-      }
-    }
-
-    if (this.vx > 0) { //moving right
-      let x_cls = findXCollisionRight(this.x - PHSZ, this.vx, this.y - PHSZ, PLAYERSIZE, PLAYERSIZE);
-      if (x_cls == null) this.x += this.vx;
-      else { //hit wall
-        this.vx = 0;
-        this.x = x_cls.x + PHSZ;
-      }
-    } else if (this.vx < 0) { //moving left
-      let x_cls = findXCollisionLeft(this.x - PHSZ, this.vx, this.y - PHSZ, PLAYERSIZE, PLAYERSIZE);
-      if (x_cls == null) this.x += this.vx;
-      else { //hit wall
-        this.vx = 0;
-        this.x = x_cls.x + PHSZ;
-      }
+      let collided = moveObjBy(this, this.theta, this.speed);
     }
 
     //interactions
@@ -189,8 +146,8 @@ function drawPlayer(ctx, player) {
   if (player.health <= 0) return;
   let f_x = Math.round(player.x)
   let f_y = Math.round(player.y)
-  let left = f_x - PLAYERSIZE; //awkward
-  let top = f_y - PLAYERSIZE;
+  // let left = f_x - PHSZ; //awkward
+  // let top = f_y - PHSZ;
   // ctx.fillRect(left, top, PLAYERSIZE, PLAYERSIZE);
   let frame = Math.floor(player.animationFrame);
   let img = PLAYERIMGS[frame];

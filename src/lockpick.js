@@ -16,6 +16,7 @@ export class LockpickWindow {
     this.active = true;
     this.holdTimer = 30;
     this.callback = callback;
+    this.numPins = numPins;
     let fullwidth = PINW * numPins;
     let firstx = W / 2 - fullwidth / 2;
     for (let i = 0; i < numPins; i++) {
@@ -34,7 +35,7 @@ export class LockpickWindow {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, W, H);
     ctx.globalAlpha = temp;
-    for (let i = 0; i < numPins; i++) {
+    for (let i = 0; i < this.numPins; i++) {
       this.chambers[i].draw(ctx);
     }
   };
@@ -45,16 +46,16 @@ export class LockpickWindow {
     if (keys["Escape"]) {
       this.active = false;
       lockPickProgress = 0;
-      for (let i = 0; i < numPins; i++) {
+      for (let i = 0; i < this.numPins; i++) {
         this.chambers[i].reset();
       }
       return;
     }
-    for (let i = 0; i < numPins; i++) {
+    for (let i = 0; i < this.numPins; i++) {
       this.chambers[i].update();
     }
 
-    if (lockPickProgress >= numPins) { //success!
+    if (lockPickProgress >= this.numPins) { //success!
       play_open_noise();
       if (this.holdTimer > 0) this.holdTimer--;
       else {
