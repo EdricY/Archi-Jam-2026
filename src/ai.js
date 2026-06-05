@@ -1,5 +1,5 @@
 import { H, mod, randInt, W } from "./gamesetup";
-import { findXCollisionLeft, findXCollisionRight, findYCollisionDown, findYCollisionUp, PHSZ, PLAYERSIZE } from "./player";
+import { findXCollisionLeft, findXCollisionRight, findYCollisionDown, findYCollisionUp, PHSZ, PLAYERSIZE, Point } from "./player";
 import { ENEMY_SPAWN_LOCATIONS } from "./state";
 import { Particles } from "./particles.js";
 import { FLOORTILES, getTileFromPos } from "./tiles.js";
@@ -57,7 +57,6 @@ export class Enemy {
     this.questionMarkTimer = 0;
     this.rotateDirection = getRotationDirection();
     this.pfBullets = [];
-    this.losBullets = [];
     this.bullets = [];
   }
 
@@ -77,16 +76,6 @@ export class Enemy {
       };
     }
 
-    len = this.losBullets.length;
-    for (let i = 0; i < len; i++) {
-      let b = this.losBullets[i];
-      if (b.update) b.update();
-      else {
-        this.losBullets.splice(i--, 1);
-        len--;
-      };
-    }
-
     len = this.bullets.length;
     for (let i = 0; i < len; i++) {
       let b = this.bullets[i];
@@ -97,16 +86,16 @@ export class Enemy {
       };
     }
 
-    if (this.withinVisibility(player)) {
-      this.shootLOSBullets();
+    let canSee = this.canSeePlayer()
+    if (canSee) {
+      this.losNotify()
     }
 
-    if (this.alerted) {
-      this.shootLOSBullets(VISRADIUS * 2);
-    } else if (alarm) {
-      this.shootLOSBullets(VISRADIUS / 3);
+    else if (this.alerted && this.canSeePlayer(VISRADIUS * 2, TAU / 2)) {
+      this.losNotify()
+    } else if (alarm && this.canSeePlayer(VISRADIUS / 3, TAU / 2)) {
+      this.losNotify()
     }
-
 
     let dx = player.x - this.x;
     let dy = player.y - this.y;
@@ -128,9 +117,9 @@ export class Enemy {
 
     this.questionMarkTimer--;
     //do action
-    if (this.action == Actions.WALKING) { //moving
+    if (this.action == Actions.WALKING) {
+      // timer does not tick down while walking
       let collided = moveObjBy(this, this.theta, this.speed);
-      // let collided = checkCollision(this);
       if (collided == true) {
         this.action = Actions.PATHFINDING;
         this.timer = 30;
@@ -158,6 +147,7 @@ export class Enemy {
       this.timer--;
       this.animationFrame = 0;
     } else if (this.action == Actions.TURNING) {
+      // timer does not tick down while turning
       let diff1 = this.thetaGoal - this.theta;
       let diff2 = diff1 - TAU;
       let diff3 = diff1 + TAU;
@@ -171,23 +161,63 @@ export class Enemy {
       } else {
         this.theta = this.thetaGoal;
         this.action = 0;
-        if (this.timer > 0) this.action = 3;
       }
       this.animationFrame = 0;
     } else if (this.action == Actions.CHASING) {
-      // let collided = checkCollision(this);
-      moveObjBy(this, this.theta, this.speed);
 
-      this.animationFrame += .2;
-      if (this.animationFrame >= 4) {
-        this.animationFrame = 0;
+      // turn towards thetaGoal
+      let diff1 = this.thetaGoal - this.theta;
+      let diff2 = diff1 - TAU;
+      let diff3 = diff1 + TAU;
+      let diff = diff1;
+      if (Math.abs(diff2) < Math.abs(diff)) diff = diff2;
+      if (Math.abs(diff3) < Math.abs(diff)) diff = diff3;
+
+      let turnspeed = this.speed / 80;
+      if (Math.abs(diff) > turnspeed) {
+        this.theta += turnspeed * Math.sign(diff);
       }
+
+
+      // let dx = player.x - this.x;
+      // let dy = player.y - this.y;
+      // let distSq = dx * dx + dy * dy;
+      // run towards if facing or if lost vision, skip this if in view and good distance away
+      if (this.canSeePlayerClearly()) {
+        // stand still and shoot
+      } else if (Math.abs(diff) > turnspeed * 2) {
+        // don't run, just turn
+      } else {
+        moveObjBy(this, this.theta, this.speed);
+      }
+
       this.timer--;
       if (this.timer <= 0) {
         this.alerted = false;
         this.action = Actions.PATHFINDING;
         this.questionMarkTimer = 20;
       }
+
+      // // let distSq = (player.x - this.x) * (player.x - this.x) + (player.y - this.y) * (player.y - this.y);
+      // if (canSee && distSq < 100 * 100) {
+      //   // if too close, switch to turning
+      //   this.action = Actions.TURNING;
+      //   this.timer = 30;
+      //   this.thetaGoal = Math.atan2(player.y - this.y, player.x - this.x);
+      // } else {
+      //   moveObjBy(this, this.theta, this.speed);
+
+      //   this.animationFrame += .2;
+      //   if (this.animationFrame >= 4) {
+      //     this.animationFrame = 0;
+      //   }
+      //   this.timer--;
+      //   if (this.timer <= 0) {
+      //     this.alerted = false;
+      //     this.action = Actions.PATHFINDING;
+      //     this.questionMarkTimer = 20;
+      //   }
+      // }
     }
   };
 
@@ -208,6 +238,11 @@ export class Enemy {
     ctx.resetTransform();
     this.drawVisibility(ctx);
 
+    if (this.canSeePlayer()) {
+      ctx.fillStyle = "red";
+      ctx.fillRect(f_x, f_y, PLAYERSIZE, PLAYERSIZE);
+    }
+
     if (this.alerted) {
       ctx.fillStyle = "red";
       ctx.font = "20px serif";
@@ -218,16 +253,16 @@ export class Enemy {
       ctx.fillText("?", f_x, f_y - PLAYERSIZE);
     }
 
+    ctx.fillText(this.action, f_x + 20, f_y - PLAYERSIZE - 20);
+    ctx.fillText(this.timer, f_x - 20, f_y - PLAYERSIZE - 20);
+
+
     for (let b of this.bullets) {
       b.draw(ctx);
     }
 
     if (aiDebug) {
       for (let b of this.pfBullets) { //debug only
-        b.draw(ctx);
-      }
-
-      for (let b of this.losBullets) { //debug only
         b.draw(ctx);
       }
     }
@@ -245,16 +280,55 @@ export class Enemy {
     }
   };
 
-  shootLOSBullets(maxDist = VISRADIUS) {
-    let dx = player.x - this.x;
-    let dy = player.y - this.y;
-    let theta = Math.atan2(dy, dx);
-    this.losBullets.push(new LOSBullet(this, theta, maxDist));
-    this.losBullets.push(new LOSBullet(this, theta + TAU / 32, maxDist));
-    this.losBullets.push(new LOSBullet(this, theta + TAU / 64, maxDist));
-    this.losBullets.push(new LOSBullet(this, theta - TAU / 32, maxDist));
-    this.losBullets.push(new LOSBullet(this, theta - TAU / 64, maxDist));
-  };
+  canSeePt(x, y, maxDist = VISRADIUS, maxAngle = VISHALFWIDTH, offsetX = 0, offsetY = 0) {
+    let ox = this.x + offsetX;
+    let oy = this.y + offsetY;
+    let dx = x - ox;
+    let dy = y - oy;
+    let distSq = dx * dx + dy * dy;
+    if (distSq > maxDist * maxDist) return false;
+    if (player.stealthy) return false;
+
+    let angle = Math.atan2(dy, dx);
+    let diff1 = this.thetaGoal - this.theta;
+    let diff2 = diff1 - TAU;
+    let diff3 = diff1 + TAU;
+    let diff = diff1;
+    if (Math.abs(diff2) < Math.abs(diff)) diff = diff2;
+    if (Math.abs(diff3) < Math.abs(diff)) diff = diff3;
+    if (Math.abs(diff) > maxAngle) return false;
+
+    let generator = getSlidePixelsGenerator(ox, oy, angle);
+    let pt = null;
+
+    // debugCtx.clearRect(0, 0, W, H);
+    while (true) {
+      pt = generator.next().value.alignedPt;
+      if (Math.abs(pt.x - x) < 3 && Math.abs(pt.y - y) < 3) return true;
+      if (!pt) break;
+      if (pt.x < 0 || pt.x >= W || pt.y < 0 || pt.y >= H) break;
+      if (collisionMap[pt.y][pt.x]) {
+        break;
+      }
+
+      // debugCtx.fillRect(pt.x, pt.y, 1, 1);
+    }
+
+    return false;
+  }
+
+  canSeePlayer(maxDist = VISRADIUS, maxAngle = VISHALFWIDTH) {
+    if (player.stealthy) return false;
+    return this.canSeePt(player.x, player.y, maxDist, maxAngle);
+  }
+
+  canSeePlayerClearly(maxDist = VISRADIUS, maxAngle = VISHALFWIDTH) {
+    if (player.stealthy) return false;
+    return this.canSeePt(player.x, player.y, maxDist, maxAngle, -10, -10) &&
+      this.canSeePt(player.x, player.y, maxDist, maxAngle, 10, 10) &&
+      this.canSeePt(player.x, player.y, maxDist, maxAngle, -10, 10) &&
+      this.canSeePt(player.x, player.y, maxDist, maxAngle, 10, -10);
+  }
 
   pfNotify(theta, dist) {
     if (dist > 8) {
@@ -263,9 +337,6 @@ export class Enemy {
   };
 
   losNotify() {
-    if (!alarm && !this.withinVisibility(player)) return;
-    if (player.stealthy) return;
-
     alarm = alarmTime;
     let dx = player.x - this.x;
     let dy = player.y - this.y;
@@ -276,9 +347,11 @@ export class Enemy {
       this.bullets.push(new Bullet(bx, by, theta));
       this.shootTimer = this.reloadTime;
     }
+
+    // this.lastSeenPoint = new Point(player.x, player.y);
     this.alerted = true;
     this.timer = 30;
-    this.action = Actions.TURNING;
+    this.action = Actions.CHASING;
     this.thetaGoal = theta;
   };
 
@@ -328,6 +401,8 @@ export class Enemy {
   };
 
   withinVisibility(pt) {
+    // checks if pt is within light cone, ignoring walls.
+
     // TODO: also add a small circle around the guard
     let lightx = this.x + 10 * Math.cos(this.theta);
     let lighty = this.y + 10 * Math.sin(this.theta);
@@ -353,51 +428,59 @@ export class Enemy {
 
 }
 
-export class LOSBullet {
-  constructor(owner, theta, maxDist = VISRADIUS) {
-    this.x = owner.x;
-    this.y = owner.y;
-    this.theta = theta;
-    this.speed = 12;
-    this.owner = owner;
-    this.dist = 0;
-    this.maxDist = maxDist;
-  }
-  update() {
-    let vx = this.speed * Math.cos(this.theta);
-    let vy = this.speed * Math.sin(this.theta);
-    // TODO: replace with slide/findCollision function
-    this.x += vx;
-    this.y += vy;
-    this.dist += this.speed;
-    if (this.dist > this.maxDist) {
-      this.update = null;
-      return;
-    }
-    let tile = getTileFromPos(mapData, this.x, this.y);
-    if (!FLOORTILES.includes(tile)) { //hit wall
-      this.update = null;
-      return;
-    }
-    if (this.intersectsPlayer()) {
-      this.owner.losNotify();
-    }
-  }
+// export class LOSBullet {
+//   constructor(owner, theta, maxDist = VISRADIUS) {
+//     this.x = owner.x;
+//     this.y = owner.y;
+//     this.theta = theta;
+//     this.speed = 12;
+//     this.owner = owner;
+//     this.dist = 0;
+//     this.maxDist = maxDist;
+//   }
+//   update() {
+//     let vx = this.speed * Math.cos(this.theta);
+//     let vy = this.speed * Math.sin(this.theta);
+//     // TODO: replace with slide/findCollision function
+//     this.x += vx;
+//     this.y += vy;
+//     this.dist += this.speed;
+//     if (this.dist > this.maxDist) {
+//       this.update = null;
+//       return;
+//     }
+//     let tile = getTileFromPos(mapData, this.x, this.y);
+//     if (!FLOORTILES.includes(tile)) { //hit wall
+//       this.update = null;
+//       return;
+//     }
+//     if (this.intersectsPlayer()) {
+//       this.owner.losNotify();
+//     }
+//   }
 
-  intersectsPlayer() {
-    let dx = player.x - this.x;
-    let dy = player.y - this.y;
-    let distSq = dx * dx + dy * dy;
-    return distSq < PLAYERSIZE * PLAYERSIZE;
-  };
+//   intersectsPlayer() {
+//     let dx = player.x - this.x;
+//     let dy = player.y - this.y;
+//     let distSq = dx * dx + dy * dy;
+//     return distSq < PLAYERSIZE * PLAYERSIZE;
+//   };
 
-  draw(ctx) {
-    ctx.fillStyle = "lime";
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 3, 0, TAU);
-    ctx.fill();
-  }
-}
+//   draw(ctx) {
+//     ctx.fillStyle = "lime";
+//     ctx.beginPath();
+//     ctx.arc(this.x, this.y, 3, 0, TAU);
+//     ctx.fill();
+//   }
+// }
+
+function intersectsPlayer(x, y) {
+  let dx = player.x - x;
+  let dy = player.y - y;
+  let distSq = dx * dx + dy * dy;
+  return distSq < PLAYERSIZE * PLAYERSIZE;
+};
+
 
 /**
  * Get best direction to go in

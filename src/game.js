@@ -27,6 +27,8 @@ export function gameInit() {
 
 // gameInit();
 
+window.debugCtx = new OffscreenCanvas(W, H).getContext("2d")
+
 export function gameDraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(floorCanvas, 0, 0);
@@ -42,10 +44,15 @@ export function gameDraw() {
 
   drawHUD(ctx);
 
+
+
   // DEBUG
+  // ctx.drawImage(debugCtx.canvas, 0, 0)
+
   // ctx.fillStyle = "rgba(255, 0, 0, .2)";
   // let en = enemies[0]
-  // let thetas = [en.theta - PI / 8, en.theta - PI / 16, en.theta, en.theta + PI / 16, en.theta + PI / 8]
+  // // let thetas = [en.theta - PI / 8, en.theta - PI / 16, en.theta, en.theta + PI / 16, en.theta + PI / 8]
+  // let thetas = [en.theta]
   // ctx.beginPath();
   // ctx.moveTo(en.x, en.y);
   // for (let theta of thetas) {
@@ -62,7 +69,7 @@ export function gameDraw() {
   //   ctx.lineTo(pt.x, pt.y);
   // }
   // ctx.closePath();
-  // ctx.fill();
+  // ctx.stroke();
 
   // for (let r = 0; r < collisionMap.length; r++) {
   //   for (let c = 0; c < collisionMap[r].length; c++) {

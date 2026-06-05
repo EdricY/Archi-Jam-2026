@@ -26,7 +26,7 @@ export function* getSlidePixelsGenerator(x0, y0, theta) {
     if (px !== lastX || py !== lastY) {
       yield {
         alignedPt: new Point(px, py),
-        originalPt: new Point(currentX, currentY),
+        precisePt: new Point(currentX, currentY),
       }
       lastX = px;
       lastY = py;
@@ -42,49 +42,63 @@ export function moveObjBy(obj, theta, speed) {
   let gen = getSlidePixelsGenerator(obj.x, obj.y, theta);
   let ox = obj.x;
   let oy = obj.y;
-  let collided = false;
+  let collidedX = false;
+  let collidedY = false;
   while (true) {
-    const { alignedPt: pt, originalPt } = gen.next().value
+    const { alignedPt: pt, precisePt } = gen.next().value
 
     if (pt.y >= obj.y + 1) {
       let c = slideDown(obj);
-      collided ||= c
+      collidedY ||= c
     }
     else if (pt.y <= obj.y - 1) {
       let c = slideUp(obj);
-      collided ||= c
+      collidedY ||= c
     }
 
     if (pt.x <= obj.x - 1) {
       let c = slideLeft(obj);
-      collided ||= c
+      collidedX ||= c
     }
     else if (pt.x >= obj.x + 1) {
       let c = slideRight(obj);
-      collided ||= c
+      collidedX ||= c
     }
 
-    let dx = pt.x - ox;
-    let dy = pt.y - oy;
+    let dx = precisePt.x - ox;
+    let dy = precisePt.y - oy;
     let distsq = dx * dx + dy * dy;
     if (distsq >= speed * speed) {
-      if (!collided) {
-        obj.x = originalPt.x;
-        obj.y = originalPt.y;
+      // done moving, add fractional unit to position if there's space.
+      let fracX = precisePt.x - obj.x;
+      if (fracX > 0 && fracX < 1 && !slideRight(obj, { doModify: false })) {
+        obj.x = precisePt.x;
       }
+      else if (fracX < 0 && fracX > -1 && !slideLeft(obj, { doModify: false })) {
+        obj.x = precisePt.x;
+      }
+
+      let fracY = precisePt.y - obj.y;
+      if (fracY > 0 && fracY < 1 && !slideDown(obj, { doModify: false })) {
+        obj.y = precisePt.y;
+      }
+      else if (fracY < 0 && fracY > -1 && !slideUp(obj, { doModify: false })) {
+        obj.y = precisePt.y;
+      }
+
       break
     };
   }
-  return collided;
+  return collidedX || collidedY;
 }
 
 // slide left 1 px
-export function slideLeft(obj, halfWidth = PHSZ) {
-  let c = Math.floor(obj.x - halfWidth - 1);
+export function slideLeft(obj, { doModify = true, halfWidth = PHSZ } = {}) {
+  let c = Math.round(obj.x - halfWidth - 1);
   if (c <= 0) return true; //left edge
-  let top = Math.floor(obj.y - halfWidth);
+  let top = Math.round(obj.y - halfWidth);
   if (top < 0) top = 0;
-  let bottom = Math.floor(obj.y + halfWidth);
+  let bottom = Math.round(obj.y + halfWidth);
   if (bottom > H) bottom = H;
   for (let r = top; r < bottom; r++) {
     if (window.collisionMap[r][c]) {
@@ -92,17 +106,17 @@ export function slideLeft(obj, halfWidth = PHSZ) {
       return true;
     }
   }
-  obj.x -= 1;
+  if (doModify) obj.x -= 1;
   return false;
 }
 
 // slide right 1 px
-export function slideRight(obj, halfWidth = PHSZ) {
-  let c = Math.floor(obj.x + halfWidth + 1);
+export function slideRight(obj, { doModify = true, halfWidth = PHSZ } = {}) {
+  let c = Math.round(obj.x + halfWidth + 1);
   if (c >= W) return true; //right edge
-  let top = Math.floor(obj.y - halfWidth);
+  let top = Math.round(obj.y - halfWidth);
   if (top < 0) top = 0;
-  let bottom = Math.floor(obj.y + halfWidth);
+  let bottom = Math.round(obj.y + halfWidth);
   if (bottom > H) bottom = H;
   for (let r = top; r < bottom; r++) {
     if (window.collisionMap[r][c]) {
@@ -110,17 +124,17 @@ export function slideRight(obj, halfWidth = PHSZ) {
       return true;
     }
   }
-  obj.x += 1;
+  if (doModify) obj.x += 1;
   return false;
 }
 
 // slide up 1 px
-export function slideUp(obj, halfWidth = PHSZ) {
-  let r = Math.floor(obj.y - halfWidth - 1);
+export function slideUp(obj, { doModify = true, halfWidth = PHSZ } = {}) {
+  let r = Math.round(obj.y - halfWidth - 1);
   if (r < 0) return true; //top edge
-  let left = Math.floor(obj.x - halfWidth);
+  let left = Math.round(obj.x - halfWidth);
   if (left < 0) left = 0;
-  let right = Math.floor(obj.x + halfWidth);
+  let right = Math.round(obj.x + halfWidth);
   if (right > W) right = W;
   for (let c = left; c < right; c++) {
     if (window.collisionMap[r][c]) {
@@ -128,17 +142,17 @@ export function slideUp(obj, halfWidth = PHSZ) {
       return true;
     }
   }
-  obj.y -= 1;
+  if (doModify) obj.y -= 1;
   return false;
 }
 
 // slide down 1 px
-export function slideDown(obj, halfWidth = PHSZ) {
-  let r = Math.floor(obj.y + halfWidth + 1);
+export function slideDown(obj, { doModify = true, halfWidth = PHSZ } = {}) {
+  let r = Math.round(obj.y + halfWidth + 1);
   if (r >= H) return true; //bottom edge
-  let left = Math.floor(obj.x - halfWidth);
+  let left = Math.round(obj.x - halfWidth);
   if (left < 0) left = 0;
-  let right = Math.floor(obj.x + halfWidth);
+  let right = Math.round(obj.x + halfWidth);
   if (right > W) right = W;
   for (let c = left; c < right; c++) {
     if (window.collisionMap[r][c]) {
@@ -146,7 +160,7 @@ export function slideDown(obj, halfWidth = PHSZ) {
       return true;
     }
   }
-  obj.y += 1;
+  if (doModify) obj.y += 1;
   return false;
 }
 
