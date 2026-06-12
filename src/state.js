@@ -245,6 +245,7 @@ export function returnToLanding() {
   enemies = [];
   collisionMap = [];
   interactionObjects = [];
+  spawner = null;
   gameState.update = function () { };
   gameState.draw = function () { };
   gameState.state = gameState.MENU;

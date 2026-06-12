@@ -21,7 +21,7 @@ var bulletSpread = .2;
 window.alarmTime = 1000
 window.alarm = 0;
 
-let aiDebug = true;
+let aiDebug = false;
 
 export const ENEMYIMGS = [
   document.getElementById("enemy_0"),
@@ -41,13 +41,13 @@ const Actions = {
 }
 
 export class Enemy {
-  constructor(x, y) {
+  constructor(x, y, theta) {
     this.x = x;
     this.y = y;
-    this.action = Actions.WALKING;
+    this.action = Actions.PATHFINDING;
     this.alerted = false;
     this.timer = 30;
-    this.theta = Math.random() * TAU - PI;
+    this.theta = theta ?? (Math.random() * TAU - PI);
     this.thetaGoal = this.theta;
     this.basespeed = 3;
     this.animationFrame = 0;
@@ -243,18 +243,6 @@ export class Enemy {
       ctx.fillRect(f_x, f_y, PLAYERSIZE, PLAYERSIZE);
     }
 
-    if (this.alerted) {
-      ctx.fillStyle = "red";
-      ctx.font = "20px serif";
-      ctx.fillText("!", f_x, f_y - PLAYERSIZE);
-    } else if (this.questionMarkTimer > 0) {
-      ctx.fillStyle = "red";
-      ctx.font = "20px serif";
-      ctx.fillText("?", f_x, f_y - PLAYERSIZE);
-    }
-
-    ctx.fillText(this.action, f_x + 20, f_y - PLAYERSIZE - 20);
-    ctx.fillText(this.timer, f_x - 20, f_y - PLAYERSIZE - 20);
 
 
     for (let b of this.bullets) {
@@ -265,6 +253,18 @@ export class Enemy {
       for (let b of this.pfBullets) { //debug only
         b.draw(ctx);
       }
+      if (this.alerted) {
+        ctx.fillStyle = "red";
+        ctx.font = "20px Verdana";
+        ctx.fillText("!", f_x, f_y - PLAYERSIZE);
+      } else if (this.questionMarkTimer > 0) {
+        ctx.fillStyle = "red";
+        ctx.font = "20px Verdana";
+        ctx.fillText("?", f_x, f_y - PLAYERSIZE);
+      }
+
+      ctx.fillText(this.action, f_x + 20, f_y - PLAYERSIZE - 20);
+      ctx.fillText(this.timer, f_x - 20, f_y - PLAYERSIZE - 20);
     }
 
 

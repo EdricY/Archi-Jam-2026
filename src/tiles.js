@@ -1,5 +1,6 @@
 import { H, W } from "./gamesetup";
 import { LockBox } from "./interactives";
+import { Spawner } from "./spawner";
 
 const TILES = {
   '255,255,255,255': null,
@@ -34,6 +35,7 @@ const TILES = {
   '64,74,64,255': 24, //metal door
   '48,48,48,255': 25,
   '0,38,255,255': 26,
+  '55,96,140,255': 27, // spawner
 };
 
 export const FLOORTILES = [1, 7, 12];
@@ -66,7 +68,8 @@ const tileImgIDs = [
   "container-blue",
   "metal-door",
   "metal-dark",
-  "water"
+  "water",
+  "spawner"
 ]
 
 /////////////////////////////
@@ -171,6 +174,11 @@ function drawMapData(ctx, mapData, removeFloor = false) {
         interactionObjects.push(
           new LockBox(lockx, locky, tileID)
         );
+      }
+      if (tileID == 27) {
+        let spawnx = col * TILESIZE + TILESIZE / 2;
+        let spawny = row * TILESIZE + TILESIZE / 2;
+        window.spawner = new Spawner(spawnx, spawny)
       }
       ctx.drawImage(tileImg, col * TILESIZE, row * TILESIZE);
     }
