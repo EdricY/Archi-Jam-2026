@@ -142,13 +142,17 @@ function squareonclick(e, mapID) {
     interactionObjects.push(new Entrance(player.x, player.y))
     let divID = mapID + "-div";
     selectSquare(divID);
-    goBtn.disabled = false;
+
+    if (document.getElementById(divID).parentElement.classList.contains("unlocked")) {
+      goBtn.disabled = false;
+    }
+
   }, 0)
 
 }
 
 function selectSquare(divID) {
-  for (let child of levelSquares.children) child.classList.remove('squareSelected')
+  for (let child of document.querySelectorAll(".square")) child.classList.remove('squareSelected')
   document.getElementById(divID).classList.add('squareSelected')
 }
 

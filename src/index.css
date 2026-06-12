@@ -2,6 +2,7 @@ html {
   margin: 0 auto;
   max-width: 900px;
 }
+
 body {
   background-color: #111;
   margin: 0;
@@ -63,6 +64,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 10rem;
+  padding-bottom: 10rem;
 }
 
 .row {
@@ -72,6 +75,7 @@ body {
   align-items: center;
   width: 100%;
 }
+
 .col {
   display: flex;
   flex-flow: column;
@@ -87,7 +91,7 @@ canvas {
   background: #FFF;
 }
 
-#canvas{
+#canvas {
   background: #555;
 }
 
@@ -100,8 +104,13 @@ canvas {
   justify-content: space-between;
 }
 
-.justifyend { justify-content: flex-end }
-.justifystart { justify-content: flex-start }
+.justifyend {
+  justify-content: flex-end
+}
+
+.justifystart {
+  justify-content: flex-start
+}
 
 #levelSquares {
   display: flex;
@@ -112,9 +121,59 @@ canvas {
   width: 100%;
 }
 
+.world {
+  display: flex;
+  position: relative;
+  flex-flow: row;
+  width: 100%;
+  gap: 2%;
+  margin: 0.25rem;
+  margin-top: 24px;
+}
+
+#world-1 {
+  justify-content: center;
+}
+
+#world-2 {
+  justify-content: end;
+}
+
+#world-3 {
+  justify-content: start;
+}
+
+#world-4 {
+  justify-content: end;
+}
+
+#world-5 {
+  justify-content: start;
+}
+
+.locked {
+  opacity: 0.5;
+}
+
+.locked .unlocked-icon,
+.unlocked .locked-icon {
+  display: none;
+}
+
+.unlocked {
+  opacity: 1;
+}
+
+.world-label {
+  font-size: 24px;
+  color: white;
+  position: absolute;
+  bottom: 100%;
+  user-select: none;
+}
+
 .square {
-  width: 17%;
-  margin-top: calc(2.5% - 6px);
+  width: 120px;
   background: #555;
   text-align: center;
   vertical-align: middle;
@@ -130,7 +189,7 @@ canvas {
   padding-bottom: 100%;
 }
 
-.square > div {
+.square>div {
   text-align: center;
   display: flex;
   flex-flow: column;
@@ -143,12 +202,18 @@ canvas {
   font-weight: bold;
 
   /* stackoverflow.com/questions/826782 */
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently */
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently */
 }
 
 .squareSelected {
