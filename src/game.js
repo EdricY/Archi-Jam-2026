@@ -1,5 +1,5 @@
 
-import { makeEnemies, PI } from "./ai.js";
+import { PI } from "./ai.js";
 import { play_background_music, stop_background_music } from "./audio.js";
 import { ctx, H, randInt, W } from "./gamesetup.js";
 import { Player, Point } from "./player.js";
@@ -22,7 +22,6 @@ window.lockpickWindow = null;
 export function gameInit() {
   play_background_music();
   // setMapData("map3");
-  makeEnemies(randInt(1, 4))
 }
 
 // gameInit();

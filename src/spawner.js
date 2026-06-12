@@ -7,8 +7,8 @@ var spawnerdebug = true;
 const spawnAnimDuration = 60;
 
 export class Spawner {
-  constructor(x, y) {
-    this.theta = Math.PI / 2;
+  constructor(x, y, theta = Math.PI / 2) {
+    this.theta = theta;
     this.spawnDelay = 120;
     this.spawnTimer = this.spawnDelay; // counts down
     this.x = x;

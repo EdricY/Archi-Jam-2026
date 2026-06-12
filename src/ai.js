@@ -1,6 +1,5 @@
 import { H, mod, randInt, W } from "./gamesetup";
 import { findXCollisionLeft, findXCollisionRight, findYCollisionDown, findYCollisionUp, PHSZ, PLAYERSIZE, Point } from "./player";
-import { ENEMY_SPAWN_LOCATIONS } from "./state";
 import { Particles } from "./particles.js";
 import { FLOORTILES, getTileFromPos } from "./tiles.js";
 import { play_injury_noise } from "./audio.js";
@@ -572,18 +571,6 @@ export class Bullet {
 export function resetAI(person) {
   person.action = (++person.action % 2);
   person.timer = randInt(12, 35);
-}
-
-
-/**
- * Generate @num enemies on the map
- */
-export function makeEnemies(num) {
-  for (let i = 0; i < num; i++) {
-    // TODO: update mapID properly (or use something else)
-    let pos = ENEMY_SPAWN_LOCATIONS[mapID][randInt(0, 4)]
-    enemies.push(new Enemy(pos.x, pos.y));
-  }
 }
 
 

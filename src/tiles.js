@@ -35,7 +35,8 @@ const TILES = {
   '64,74,64,255': 24, //metal door
   '48,48,48,255': 25,
   '0,38,255,255': 26,
-  '55,96,140,255': 27, // spawner
+  '55,96,140,255': 27, // spawner-down
+  '137,46,104,255': 28, // spawner-up
 };
 
 export const FLOORTILES = [1, 7, 12];
@@ -69,7 +70,8 @@ const tileImgIDs = [
   "metal-door",
   "metal-dark",
   "water",
-  "spawner"
+  "spawner-down",
+  "spawner-up",
 ]
 
 /////////////////////////////
@@ -175,11 +177,17 @@ function drawMapData(ctx, mapData, removeFloor = false) {
           new LockBox(lockx, locky, tileID)
         );
       }
-      if (tileID == 27) {
+      if (tileID == 27) { // spawner-down
         let spawnx = col * TILESIZE + TILESIZE / 2;
         let spawny = row * TILESIZE + TILESIZE / 2;
         window.spawner = new Spawner(spawnx, spawny)
       }
+      if (tileID == 28) { // spawner-up
+        let spawnx = col * TILESIZE + TILESIZE / 2;
+        let spawny = row * TILESIZE + TILESIZE / 2;
+        window.spawner = new Spawner(spawnx, spawny, 3 * Math.PI / 2)
+      }
+
       ctx.drawImage(tileImg, col * TILESIZE, row * TILESIZE);
     }
   }
