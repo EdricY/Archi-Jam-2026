@@ -71,19 +71,27 @@ export function moveObjBy(obj, theta, speed) {
     if (distsq >= speed * speed) {
       // done moving, add fractional unit to position if there's space.
       let fracX = precisePt.x - obj.x;
-      if (fracX > 0 && fracX < 1 && !slideRight(obj, { doModify: false })) {
-        obj.x = precisePt.x;
+      if (fracX > 0 && fracX < 1) {
+        let c = slideRight(obj, { doModify: false })
+        if (c) collidedX = true;
+        else obj.x = precisePt.x;
       }
-      else if (fracX < 0 && fracX > -1 && !slideLeft(obj, { doModify: false })) {
-        obj.x = precisePt.x;
+      else if (fracX < 0 && fracX > -1) {
+        let c = slideLeft(obj, { doModify: false })
+        if (c) collidedX = true;
+        else obj.x = precisePt.x;
       }
 
       let fracY = precisePt.y - obj.y;
-      if (fracY > 0 && fracY < 1 && !slideDown(obj, { doModify: false })) {
-        obj.y = precisePt.y;
+      if (fracY > 0 && fracY < 1) {
+        let c = slideDown(obj, { doModify: false })
+        if (c) collidedY = true;
+        else obj.y = precisePt.y;
       }
-      else if (fracY < 0 && fracY > -1 && !slideUp(obj, { doModify: false })) {
-        obj.y = precisePt.y;
+      else if (fracY < 0 && fracY > -1) {
+        let c = slideUp(obj, { doModify: false })
+        if (c) collidedY = true;
+        else obj.y = precisePt.y;
       }
 
       break

@@ -162,7 +162,7 @@ export function returnToLanding() {
   enemies = [];
   collisionMap = [];
   interactionObjects = [];
-  window.spawner = null;
+  window.spawners = [];
   gameState.update = function () { };
   gameState.draw = function () { };
   gameState.state = gameState.MENU;

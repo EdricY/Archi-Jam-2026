@@ -7,14 +7,14 @@ var spawnerdebug = true;
 const spawnAnimDuration = 60;
 
 export class Spawner {
-  constructor(x, y, theta = Math.PI / 2) {
+  constructor(x, y, theta = Math.PI / 2, startDelay = 100, spawnDelay = 600, maxEnemies = 5) {
     this.theta = theta;
-    this.spawnDelay = 120;
-    this.spawnTimer = this.spawnDelay; // counts down
+    this.spawnDelay = spawnDelay;
+    this.spawnTimer = startDelay; // counts down
     this.x = x;
     this.y = y;
     this.numSpawned = 0;
-    this.maxEnemies = 5;
+    this.maxEnemies = maxEnemies;
   }
 
   draw(ctx) {

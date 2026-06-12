@@ -177,13 +177,15 @@ export class Enemy {
         this.theta += turnspeed * Math.sign(diff);
       }
 
-
-      // let dx = player.x - this.x;
-      // let dy = player.y - this.y;
-      // let distSq = dx * dx + dy * dy;
       // run towards if facing or if lost vision, skip this if in view and good distance away
       if (this.canSeePlayerClearly()) {
         // stand still and shoot
+        let bx = this.x;
+        let by = this.y;
+        if (this.shootTimer <= 0) {
+          this.bullets.push(new Bullet(bx, by, this.theta));
+          this.shootTimer = this.reloadTime;
+        }
       } else if (Math.abs(diff) > turnspeed * 2) {
         // don't run, just turn
       } else {
@@ -196,27 +198,6 @@ export class Enemy {
         this.action = Actions.PATHFINDING;
         this.questionMarkTimer = 20;
       }
-
-      // // let distSq = (player.x - this.x) * (player.x - this.x) + (player.y - this.y) * (player.y - this.y);
-      // if (canSee && distSq < 100 * 100) {
-      //   // if too close, switch to turning
-      //   this.action = Actions.TURNING;
-      //   this.timer = 30;
-      //   this.thetaGoal = Math.atan2(player.y - this.y, player.x - this.x);
-      // } else {
-      //   moveObjBy(this, this.theta, this.speed);
-
-      //   this.animationFrame += .2;
-      //   if (this.animationFrame >= 4) {
-      //     this.animationFrame = 0;
-      //   }
-      //   this.timer--;
-      //   if (this.timer <= 0) {
-      //     this.alerted = false;
-      //     this.action = Actions.PATHFINDING;
-      //     this.questionMarkTimer = 20;
-      //   }
-      // }
     }
   };
 
@@ -236,13 +217,6 @@ export class Enemy {
     ctx.drawImage(img, -PLAYERSIZE, -PLAYERSIZE);
     ctx.resetTransform();
     this.drawVisibility(ctx);
-
-    if (this.canSeePlayer()) {
-      ctx.fillStyle = "red";
-      ctx.fillRect(f_x, f_y, PLAYERSIZE, PLAYERSIZE);
-    }
-
-
 
     for (let b of this.bullets) {
       b.draw(ctx);
@@ -340,12 +314,6 @@ export class Enemy {
     let dx = player.x - this.x;
     let dy = player.y - this.y;
     let theta = Math.atan2(dy, dx);
-    let bx = this.x;
-    let by = this.y;
-    if (this.shootTimer <= 0) {
-      this.bullets.push(new Bullet(bx, by, theta));
-      this.shootTimer = this.reloadTime;
-    }
 
     // this.lastSeenPoint = new Point(player.x, player.y);
     this.alerted = true;

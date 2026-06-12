@@ -37,8 +37,9 @@ export function gameDraw() {
   for (let en of enemies) {
     en.draw(ctx);
   }
-  if (window.spawner) {
-    window.spawner.draw(ctx);
+
+  for (let spawner of window.spawners) {
+    spawner.draw(ctx);
   }
   ctx.fillStyle = "yellow";
   // ctx.fillText(player.theta, 100,10);
@@ -101,7 +102,9 @@ export function gameUpdate() {
   else alarm = 0;
 
   if (lockpickWindow) lockpickWindow.update();
-  if (window.spawner) window.spawner.update();
+  for (let spawner of window.spawners) {
+    spawner.update();
+  }
   lastKeys = JSON.parse(JSON.stringify(keys)); //deep copy
 }
 

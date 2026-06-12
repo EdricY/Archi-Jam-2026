@@ -117,7 +117,8 @@ for (let colorstr in TILES) {
 export function setMapData(imgID) {
   window.mapID = Number(imgID.substr(3)); //maps must be named map##
   mapData = getMapData(imgID);
-  interactionObjects = [];
+  window.interactionObjects = [];
+  window.spawners = []
 
   collisionctx.clearRect(0, 0, collisionCanvas.width, collisionCanvas.height);
   drawMapData(collisionctx, mapData, true)
@@ -180,12 +181,12 @@ function drawMapData(ctx, mapData, removeFloor = false) {
       if (tileID == 27) { // spawner-down
         let spawnx = col * TILESIZE + TILESIZE / 2;
         let spawny = row * TILESIZE + TILESIZE / 2;
-        window.spawner = new Spawner(spawnx, spawny)
+        window.spawners.push(new Spawner(spawnx, spawny))
       }
       if (tileID == 28) { // spawner-up
         let spawnx = col * TILESIZE + TILESIZE / 2;
         let spawny = row * TILESIZE + TILESIZE / 2;
-        window.spawner = new Spawner(spawnx, spawny, 3 * Math.PI / 2)
+        window.spawners.push(new Spawner(spawnx, spawny, 3 * Math.PI / 2))
       }
 
       ctx.drawImage(tileImg, col * TILESIZE, row * TILESIZE);
