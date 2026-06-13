@@ -1,5 +1,5 @@
-import { H, mod, randInt, W } from "./gamesetup";
-import { findXCollisionLeft, findXCollisionRight, findYCollisionDown, findYCollisionUp, PHSZ, PLAYERSIZE, Point } from "./player";
+import { H, mod, randInt, W } from "./gamesetup.js";
+import { findXCollisionLeft, findXCollisionRight, findYCollisionDown, findYCollisionUp, PHSZ, PLAYERSIZE, Point } from "./player.js";
 import { Particles } from "./particles.js";
 import { FLOORTILES, getTileFromPos } from "./tiles.js";
 import { play_injury_noise } from "./audio.js";

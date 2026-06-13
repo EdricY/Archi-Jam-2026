@@ -1,5 +1,5 @@
 
-import { PI } from "./ai.js";
+import { PI } from "./enemy.js";
 import { play_background_music, stop_background_music } from "./audio.js";
 import { ctx, H, randInt, W } from "./gamesetup.js";
 import { Player, Point } from "./player.js";

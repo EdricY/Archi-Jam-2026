@@ -1,4 +1,4 @@
-import { Enemy, PI, ENEMYIMGS } from "./ai";
+import { Enemy, PI, ENEMYIMGS } from "./enemy.js";
 import { TILESIZE } from "./tiles";
 import { PLAYERSIZE } from "./player.js";
 

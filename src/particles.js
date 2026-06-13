@@ -1,4 +1,4 @@
-import { TAU } from "./ai";
+import { TAU } from "./enemy";
 
 let partColors = ["#812", "#26C", "#262"];
 export const Particles = {
