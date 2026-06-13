@@ -1,9 +1,11 @@
+import { archiClient, hasItem } from "./archi";
 import { stop_background_music } from "./audio";
 import { gameDraw, gameInit, gameUpdate } from "./game";
 import { MAPIDS } from "./gamesetup";
 import { Entrance } from "./interactives";
 import { Player } from "./player";
 import { setMapData } from "./tiles";
+import { Client } from "archipelago.js";
 
 const canvasContainer = document.getElementById('canvasContainer');
 const menuDiv = document.getElementById('menuDiv');
@@ -56,7 +58,7 @@ const landingUpgradesButton = document.getElementById("landingUpgradesButton");
 const creditsBackButton = document.getElementById("creditsBackButton");
 const shopBackButton = document.getElementById("shopBackButton");
 
-playButton.onclick = showLanding;
+playButton.onclick = handlePlayButtonClicked;
 instructionsButton.onclick = showInstructions;
 creditsButton.onclick = showCredits;
 goBtn.onclick = showGame;
@@ -66,9 +68,40 @@ landingUpgradesButton.onclick = showUpgrades;
 creditsBackButton.onclick = showMenu;
 shopBackButton.onclick = showLanding;
 
+
+
+function handlePlayButtonClicked() {
+  const hostInput = document.getElementById("hostInput");
+  const portInput = document.getElementById("portInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const slotInput = document.getElementById("slotNameInput");
+  archiClient.login(hostInput.value + ":" + portInput.value, slotInput.value, "HeistJam", { tags: ["AP"], password: passwordInput.value })
+    .then(() => {
+      console.log("Connected to the Archipelago server!")
+      showLanding();
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(error)
+    });
+}
+
 function showLanding() {
   gameState.hideAll();
   landingDiv.classList.remove("nodisplay")
+
+  setTimeout(() => {
+    for (let worldNum of [2, 3, 4, 5]) {
+      let w = document.getElementById("world-" + worldNum)
+      w.classList.remove("locked")
+      w.classList.remove("unlocked")
+      if (hasItem("World " + worldNum + " Key")) {
+        w.classList.add("unlocked")
+      } else {
+        w.classList.add("locked")
+      }
+    }
+  }, 200)
 }
 
 export function showMenu() {

@@ -2,7 +2,7 @@ import { Enemy, PI, ENEMYIMGS } from "./enemy.js";
 import { TILESIZE } from "./tiles";
 import { PLAYERSIZE } from "./player.js";
 
-var spawnerdebug = true;
+var spawnerdebug = false;
 
 const spawnAnimDuration = 60;
 

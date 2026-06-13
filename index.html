@@ -3,22 +3,40 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Heist</title>
 </head>
 
 <body>
   <div id="menuDiv" class="outer">
-    <h1>Bad Guy Simulator: The Heist</h1>
+    <h1>The Heist: Archipelago Jam Edition</h1>
+    <label class="menuInputOuter">
+      Host:
+      <!-- <input type="text" id="hostInput" value="archipelago.gg"> -->
+      <input type="text" id="hostInput" value="localhost">
+    </label>
+    <label class="menuInputOuter">
+      Port:
+      <input type="text" id="portInput" placeholder="38281">
+    </label>
+    <label class="menuInputOuter">
+      Slot name:
+      <!-- <input type="text" id="slotNameInput"> -->
+      <input type="text" id="slotNameInput" value="blsample">
+    </label>
+    <label class="menuInputOuter">
+      Password:
+      <input type="password" id="passwordInput">
+    </label>
+
     <button class="menuButton" id="playButton">Play!</button>
     <button class="menuButton" id="instructionsButton">Instructions</button>
     <button class="menuButton" id="creditsButton">Credits</button>
   </div>
   <div id="instructionsDiv" class="outer nodisplay">
     <div>
-      <p>Use the Arrow Keys to move.
-      <p>
+      <p>Use the Arrow Keys to move.</p>
       <p>Use Z to run faster.</p>
       <p>Use X to stealth in place.</p>
       <p>Use Space to interact with doors and locks.</p>

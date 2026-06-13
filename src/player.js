@@ -1,4 +1,5 @@
 import { H, W } from "./gamesetup";
+import { Entrance } from "./interactives";
 import { moveObjBy } from "./slide";
 import { returnToLanding } from "./state";
 import { getTileFromPos } from "./tiles";
@@ -50,7 +51,7 @@ export class Player {
     this.stealthy = false;
     this.stealthTimer = 0;
     this.animationFrame = 0;
-    this.inventory = 0;
+    this.inventory = [];
     this.theta = 0;
     this.message = "";
     this.actionTarget = null;
@@ -128,8 +129,9 @@ export class Player {
     }
 
     //interactions
-    // if (this.inventory) return;
     this.actionTarget = closestInteractionObject(this);
+    let isEncumbered = this.inventory.length > 0;
+    if (isEncumbered && !(this.actionTarget instanceof Entrance)) return;
     if (this.actionTarget) {
       this.message = this.actionTarget.message;
       if (keys[" "] && !lastKeys[" "]) {
@@ -152,7 +154,7 @@ function drawPlayer(ctx, player) {
   let frame = Math.floor(player.animationFrame);
   let img = PLAYERIMGS[frame];
   let rotation = player.theta + PI / 2;
-  if (player.inventory) img = PLAYERBAGIMGS[frame];
+  if (player.inventory.length) img = PLAYERBAGIMGS[frame];
 
   if (player.speedy) {
     playerctx.save();

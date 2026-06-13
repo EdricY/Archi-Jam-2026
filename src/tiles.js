@@ -37,10 +37,13 @@ const TILES = {
   '0,38,255,255': 26,
   '55,96,140,255': 27, // spawner-down
   '137,46,104,255': 28, // spawner-up
+  '110,0,0,255': 29, //safe-2
+  '120,0,0,255': 30, //register-2
+
 };
 
 export const FLOORTILES = [1, 7, 12];
-const LOCKEDTILES = [20, 21, 24]
+const LOCKEDTILES = [20, 21, 24, 29, 30]
 
 const tileImgIDs = [
   "tile0",
@@ -72,6 +75,8 @@ const tileImgIDs = [
   "water",
   "spawner-down",
   "spawner-up",
+  "safe-closed",
+  "register-closed",
 ]
 
 /////////////////////////////
@@ -139,7 +144,6 @@ export function setMapData(imgID) {
 
 function getMapData(imgID) {
   let img = document.getElementById(imgID)
-  console.log(img)
   let data = [];
   ml_ctx.drawImage(img, 0, 0);
   let w = MAPW;

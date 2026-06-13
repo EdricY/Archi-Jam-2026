@@ -17,11 +17,28 @@ body {
   align-items: center;
 }
 
+h1 {
+  text-align: center;
+  padding-inline: 10px;
+  text-wrap: pretty;
+}
+
 #menuDiv {
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
+}
+
+.menuInputOuter {
+  display: grid;
+  grid-template-columns: auto 180px;
+  align-items: center;
+  width: 250px;
+  margin: 4px;
+  gap: 4px;
+  text-align: right;
+  font-size: 14px;
 }
 
 .menuButton {
@@ -64,8 +81,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 10rem;
-  padding-bottom: 10rem;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
 }
 
 .row {

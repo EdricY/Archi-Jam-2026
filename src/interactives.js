@@ -1,3 +1,4 @@
+import { archiClient, location_name_to_id } from "./archi";
 import { H, randInt, W } from "./gamesetup";
 import { LockpickWindow } from "./lockpick";
 import { returnToLanding } from "./state";
@@ -14,15 +15,20 @@ export class LockBox {
     this.y = y;
     this.message = "Lockpick [Space]";
     this.done = false;
+    window.archiClient = archiClient
 
     this.callback = () => { };
-    if (tileID == 20) { //safe
+    if (tileID == 20 || tileID == 29) { // safe
       this.pins = randInt(3, 7);
       this.callback = () => {
         this.done = true;
-        player.inventory += randInt(200, 1000);
+        let locName;
+        if (tileID == 20) locName = `Level ${window.mapID + 1} Chest 1`
+        else locName = `Level ${window.mapID + 1} Chest 2`
+        player.inventory.push(location_name_to_id[locName]);
         let r = Math.floor(y / TILESIZE);
         let c = Math.floor(x / TILESIZE);
+        // archiClient.check(2785200)
         collisionctx.clearRect(c * TILESIZE, r * TILESIZE, TILESIZE, TILESIZE);
         collisionctx.drawImage(safe_open, c * TILESIZE, r * TILESIZE);
       };
@@ -30,7 +36,10 @@ export class LockBox {
       this.pins = randInt(3, 6);
       this.callback = () => {
         this.done = true;
-        player.inventory += randInt(300, 800);
+        let locName;
+        if (tileID == 21) locName = `Level ${window.mapID + 1} Chest 1`
+        else locName = `Level ${window.mapID + 1} Chest 2`
+        player.inventory.push(location_name_to_id[locName]);
         let r = Math.floor(y / TILESIZE);
         let c = Math.floor(x / TILESIZE);
         collisionctx.clearRect(c * TILESIZE, r * TILESIZE, TILESIZE, TILESIZE);
@@ -62,11 +71,13 @@ export class LockBox {
 
     if (onelesspin) this.pins--;
 
-    this.lockpickWindow = new LockpickWindow(this.pins, this.callback);
-    this.interact = () => {
-      lockpickWindow = this.lockpickWindow;
-      lockpickWindow.active = true;
-    };
+    // this.lockpickWindow = new LockpickWindow(this.pins, this.callback);
+    this.lockpickWindow = new LockpickWindow(1, this.callback);
+  }
+
+  interact() {
+    lockpickWindow = this.lockpickWindow;
+    lockpickWindow.active = true;
   }
 }
 
@@ -76,11 +87,13 @@ export class Entrance {
     this.y = y;
     this.done = false;
     this.message = "";
-    setTimeout(() => this.message = "Return Home [Space]", 10000); //debug change me
+    // TODO: this counts from when the entrance is created, should count from when entering the level or some other solution
+    setTimeout(() => this.message = "Return Home [Space]", 10000);
   }
 
   interact() {
-    walletAmt += player.inventory;
+    archiClient.check(...player.inventory)
+    player.inventory = []
     returnToLanding();
   }
 }

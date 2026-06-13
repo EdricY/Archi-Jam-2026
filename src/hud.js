@@ -1,3 +1,4 @@
+import { archiClient } from "./archi";
 import { H, W } from "./gamesetup";
 
 export function drawHUD(ctx) {
@@ -30,8 +31,35 @@ export function drawHUD(ctx) {
   ctx.fillStyle = "white";
   ctx.fillText("!", 30, 512 + 12 + 30 + 10)
 
+  ctx.fillText(`Holding: ${player.inventory.length > 0 ? getInventoryString() : "Nothing"}`, 400, 512 + 12 + 15)
+
   // ctx.strokeRect(W - 10 - alarmTime/5, 536, alarmTime/5, 15)
   // ctx.fillStyle = "red";
   // ctx.fillRect(W - 10 - alarm/5, 536, Math.round(alarm/5), 15)
-
 }
+
+export const scoutDict = new Map();
+// undefined => not in dict, false => scouting, string => scouted value
+export function getInventoryString() {
+  let s = ""
+  let first = true;
+  for (let inv of player.inventory) {
+    if (scoutDict.get(inv) == undefined) {
+      scoutDict.set(inv, false);
+      archiClient.scout([inv]).then((scout_items) => {
+        scoutDict.set(inv, scout_items[0].name);
+      })
+    } else if (scoutDict.get(inv) == false) {
+      s += "Unknown "
+    } else {
+      s += scoutDict.get(inv) + " "
+    }
+    if (first) {
+      first = false;
+    } else {
+      s += ", "
+    }
+  }
+  return s
+}
+
