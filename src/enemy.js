@@ -225,18 +225,18 @@ export class Enemy {
       for (let b of this.pfBullets) { //debug only
         b.draw(ctx);
       }
-      if (this.alerted) {
-        ctx.fillStyle = "red";
-        ctx.font = "20px Verdana";
-        ctx.fillText("!", f_x, f_y - PLAYERSIZE);
-      } else if (this.questionMarkTimer > 0) {
-        ctx.fillStyle = "red";
-        ctx.font = "20px Verdana";
-        ctx.fillText("?", f_x, f_y - PLAYERSIZE);
-      }
-
       ctx.fillText(this.action, f_x + 20, f_y - PLAYERSIZE - 20);
       ctx.fillText(this.timer, f_x - 20, f_y - PLAYERSIZE - 20);
+    }
+
+    if (this.alerted) {
+      ctx.fillStyle = "red";
+      ctx.font = "20px Verdana";
+      ctx.fillText("!", f_x, f_y - PLAYERSIZE);
+    } else if (this.questionMarkTimer > 0) {
+      ctx.fillStyle = "red";
+      ctx.font = "20px Verdana";
+      ctx.fillText("?", f_x, f_y - PLAYERSIZE);
     }
 
 
