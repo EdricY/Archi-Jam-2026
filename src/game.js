@@ -2,7 +2,7 @@
 import { PI } from "./enemy.js";
 import { play_background_music, stop_background_music } from "./audio.js";
 import { ctx, H, randInt, W } from "./gamesetup.js";
-import { Player, Point } from "./player.js";
+import { drawInteractionTarget, Player, Point } from "./player.js";
 import { gameState } from "./state.js";
 import { Particles } from "./particles.js";
 import { drawHUD } from "./hud.js";
@@ -31,6 +31,7 @@ window.debugCtx = new OffscreenCanvas(W, H).getContext("2d")
 export function gameDraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(floorCanvas, 0, 0);
+  drawInteractionTarget(ctx, player);
   ctx.drawImage(collisionCanvas, 0, 0);
   player.draw(ctx);
   Particles.draw(ctx, 0);

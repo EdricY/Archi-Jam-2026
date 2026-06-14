@@ -47,20 +47,20 @@ export function moveObjBy(obj, theta, speed) {
   while (true) {
     const { alignedPt: pt, precisePt } = gen.next().value
 
-    if (pt.y >= obj.y + 1) {
+    if (pt.y >= obj.y + .5) {
       let c = slideDown(obj);
       collidedY ||= c
     }
-    else if (pt.y <= obj.y - 1) {
+    else if (pt.y <= obj.y - .5) {
       let c = slideUp(obj);
       collidedY ||= c
     }
 
-    if (pt.x <= obj.x - 1) {
+    if (pt.x <= obj.x - .5) {
       let c = slideLeft(obj);
       collidedX ||= c
     }
-    else if (pt.x >= obj.x + 1) {
+    else if (pt.x >= obj.x + .5) {
       let c = slideRight(obj);
       collidedX ||= c
     }
@@ -83,6 +83,7 @@ export function moveObjBy(obj, theta, speed) {
       }
 
       let fracY = precisePt.y - obj.y;
+
       if (fracY > 0 && fracY < 1) {
         let c = slideDown(obj, { doModify: false })
         if (c) collidedY = true;
@@ -104,9 +105,9 @@ export function moveObjBy(obj, theta, speed) {
 export function slideLeft(obj, { doModify = true, halfWidth = PHSZ } = {}) {
   let c = Math.round(obj.x - halfWidth - 1);
   if (c <= 0) return true; //left edge
-  let top = Math.round(obj.y - halfWidth);
+  let top = Math.round(obj.y - halfWidth + .5);
   if (top < 0) top = 0;
-  let bottom = Math.round(obj.y + halfWidth);
+  let bottom = Math.round(obj.y + halfWidth - .5);
   if (bottom > H) bottom = H;
   for (let r = top; r < bottom; r++) {
     if (window.collisionMap[r][c]) {
@@ -122,9 +123,9 @@ export function slideLeft(obj, { doModify = true, halfWidth = PHSZ } = {}) {
 export function slideRight(obj, { doModify = true, halfWidth = PHSZ } = {}) {
   let c = Math.round(obj.x + halfWidth + 1);
   if (c >= W) return true; //right edge
-  let top = Math.round(obj.y - halfWidth);
+  let top = Math.round(obj.y - halfWidth + .5);
   if (top < 0) top = 0;
-  let bottom = Math.round(obj.y + halfWidth);
+  let bottom = Math.round(obj.y + halfWidth - .5);
   if (bottom > H) bottom = H;
   for (let r = top; r < bottom; r++) {
     if (window.collisionMap[r][c]) {
@@ -140,9 +141,9 @@ export function slideRight(obj, { doModify = true, halfWidth = PHSZ } = {}) {
 export function slideUp(obj, { doModify = true, halfWidth = PHSZ } = {}) {
   let r = Math.round(obj.y - halfWidth - 1);
   if (r < 0) return true; //top edge
-  let left = Math.round(obj.x - halfWidth);
+  let left = Math.round(obj.x - halfWidth + .5);
   if (left < 0) left = 0;
-  let right = Math.round(obj.x + halfWidth);
+  let right = Math.round(obj.x + halfWidth - .5);
   if (right > W) right = W;
   for (let c = left; c < right; c++) {
     if (window.collisionMap[r][c]) {
@@ -158,9 +159,9 @@ export function slideUp(obj, { doModify = true, halfWidth = PHSZ } = {}) {
 export function slideDown(obj, { doModify = true, halfWidth = PHSZ } = {}) {
   let r = Math.round(obj.y + halfWidth + 1);
   if (r >= H) return true; //bottom edge
-  let left = Math.round(obj.x - halfWidth);
+  let left = Math.round(obj.x - halfWidth + .5);
   if (left < 0) left = 0;
-  let right = Math.round(obj.x + halfWidth);
+  let right = Math.round(obj.x + halfWidth - .5);
   if (right > W) right = W;
   for (let c = left; c < right; c++) {
     if (window.collisionMap[r][c]) {

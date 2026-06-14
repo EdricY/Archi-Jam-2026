@@ -23,7 +23,7 @@ class HeistJamWorld(World):
         "World 3 Key": heist_jam_base_id + 1,
         "World 4 Key": heist_jam_base_id + 2,
         "World 5 Key": heist_jam_base_id + 3,
-        "Filler Item": heist_jam_base_id + 4,
+        "$200": heist_jam_base_id + 4,
     }
 
     location_name_to_id = {
@@ -56,7 +56,7 @@ class HeistJamWorld(World):
         "Level 14 Chest 1": heist_jam_base_id + 126,
         "Level 14 Chest 2": heist_jam_base_id + 127,
         "Level 15 Chest 1": heist_jam_base_id + 128,
-        "Level 15 Chest 2": heist_jam_base_id + 129,
+        # "Level 15 Chest 2": heist_jam_base_id + 129,
     }
 
     def create_item(self, name: str) -> HeistJamItem:
@@ -72,7 +72,7 @@ class HeistJamWorld(World):
         location_count = len(self.multiworld.get_unfilled_locations(self.player))
         leftover = location_count - len(self.multiworld.itempool)
         for _ in range(leftover):
-            self.multiworld.itempool.append(self.create_item("Filler Item"))
+            self.multiworld.itempool.append(self.create_item("$200"))
 
     def create_regions(self) -> None:
         menu = Region("Menu", self.player, self.multiworld)
@@ -129,7 +129,7 @@ class HeistJamWorld(World):
             HeistJamLocation(self.player, "Level 14 Chest 1", self.location_name_to_id["Level 14 Chest 1"], world5),
             HeistJamLocation(self.player, "Level 14 Chest 2", self.location_name_to_id["Level 14 Chest 2"], world5),
             HeistJamLocation(self.player, "Level 15 Chest 1", self.location_name_to_id["Level 15 Chest 1"], world5),
-            HeistJamLocation(self.player, "Level 15 Chest 2", self.location_name_to_id["Level 15 Chest 2"], world5),
+            # HeistJamLocation(self.player, "Level 15 Chest 2", self.location_name_to_id["Level 15 Chest 2"], world5),
         ]
         self.multiworld.regions.append(world5)
 

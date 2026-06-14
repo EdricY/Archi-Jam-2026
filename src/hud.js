@@ -1,5 +1,6 @@
 import { archiClient } from "./archi";
 import { H, W } from "./gamesetup";
+import { PLAYERSIZE } from "./player";
 
 export function drawHUD(ctx) {
   ctx.font = "14px serif"
@@ -36,6 +37,12 @@ export function drawHUD(ctx) {
   // ctx.strokeRect(W - 10 - alarmTime/5, 536, alarmTime/5, 15)
   // ctx.fillStyle = "red";
   // ctx.fillRect(W - 10 - alarm/5, 536, Math.round(alarm/5), 15)
+
+  if (player.message && player.actionTarget) {
+    ctx.fillStyle = "black"
+    ctx.font = "14px serif"
+    ctx.fillText(player.message, Math.round(player.actionTarget?.x), Math.round(player.actionTarget?.y) - PLAYERSIZE)
+  }
 }
 
 export const scoutDict = new Map();
@@ -44,20 +51,21 @@ export function getInventoryString() {
   let s = ""
   let first = true;
   for (let inv of player.inventory) {
-    if (scoutDict.get(inv) == undefined) {
-      scoutDict.set(inv, false);
-      archiClient.scout([inv]).then((scout_items) => {
-        scoutDict.set(inv, scout_items[0].name);
-      })
-    } else if (scoutDict.get(inv) == false) {
-      s += "Unknown "
-    } else {
-      s += scoutDict.get(inv) + " "
-    }
     if (first) {
       first = false;
     } else {
       s += ", "
+    }
+
+    if (scoutDict.get(inv) == undefined) {
+      scoutDict.set(inv, false);
+      archiClient.scout([inv]).then((scout_items) => {
+        scoutDict.set(inv, scout_items[0]?.name);
+      })
+    } else if (scoutDict.get(inv) == false) {
+      s += "Unknown"
+    } else {
+      s += scoutDict.get(inv)
     }
   }
   return s

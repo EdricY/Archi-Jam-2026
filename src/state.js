@@ -4,6 +4,7 @@ import { gameDraw, gameInit, gameUpdate } from "./game";
 import { MAPIDS } from "./gamesetup";
 import { Entrance } from "./interactives";
 import { Player } from "./player";
+import { addToWallet, loadWallet } from "./shop";
 import { setMapData } from "./tiles";
 import { Client } from "archipelago.js";
 
@@ -16,19 +17,19 @@ const creditsDiv = document.getElementById('creditsDiv');
 const TILE_OFFSET = 16;
 
 export const PLAYER_SPAWN_LOCATIONS = {
-  0: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
+  0: { x: 24 * TILE_OFFSET, y: 30 * TILE_OFFSET },
   1: { x: 46 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  2: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  3: { x: 24 * TILE_OFFSET, y: 30 * TILE_OFFSET },
+  2: { x: 42 * TILE_OFFSET, y: 2 * TILE_OFFSET },
+  3: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
   4: { x: 24 * TILE_OFFSET, y: 30 * TILE_OFFSET },
-  5: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  6: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  7: { x: 1 * TILE_OFFSET, y: 28 * TILE_OFFSET },
+  5: { x: 24 * TILE_OFFSET, y: 2 * TILE_OFFSET },
+  6: { x: 24 * TILE_OFFSET, y: 30 * TILE_OFFSET },
+  7: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
   8: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  9: { x: 24 * TILE_OFFSET, y: 30 * TILE_OFFSET },
+  9: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
   10: { x: 24 * TILE_OFFSET, y: 1 * TILE_OFFSET },
-  11: { x: 42 * TILE_OFFSET, y: 1 * TILE_OFFSET },
-  12: { x: 24 * TILE_OFFSET, y: 1 * TILE_OFFSET },
+  11: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
+  12: { x: 1 * TILE_OFFSET, y: 28 * TILE_OFFSET },
   13: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
   14: { x: 4 * TILE_OFFSET, y: 30 * TILE_OFFSET },
 };
@@ -78,6 +79,16 @@ function handlePlayButtonClicked() {
   archiClient.login(hostInput.value + ":" + portInput.value, slotInput.value, "HeistJam", { tags: ["AP"], password: passwordInput.value })
     .then(() => {
       console.log("Connected to the Archipelago server!")
+      console.log("room seed:" + archiClient.room.seedName)
+      loadWallet()
+      archiClient.items.on("itemsReceived", (items) => {
+        for (let item of items) {
+          console.log(`Received item: ${item.name} from ${item.sender.name}`);
+          if (item.name == "$200") {
+            addToWallet(200);
+          }
+        }
+      });
       showLanding();
     })
     .catch((error) => {
@@ -122,7 +133,7 @@ export function showCredits() {
 export function showUpgrades() {
   gameState.hideAll();
   upgradesDiv.classList.remove("nodisplay")
-  document.getElementById("wallet").innerHTML = walletAmt;
+  document.getElementById("wallet").innerHTML = window.walletAmt;
   shopMessage.innerHTML = "Welcome to the shop!";
 }
 

@@ -32,18 +32,20 @@ const TILES = {
   '20,0,0,255': 21, //register
   '170,0,0,255': 22,
   '0,21,145,255': 23,
-  '64,74,64,255': 24, //metal door
+  '64,74,64,255': 24, //metal door - L
   '48,48,48,255': 25,
   '0,38,255,255': 26,
   '55,96,140,255': 27, // spawner-down
   '137,46,104,255': 28, // spawner-up
   '110,0,0,255': 29, //safe-2
   '120,0,0,255': 30, //register-2
-
+  '64,74,84,255': 31, //metal door - R
+  '64,74,94,255': 32, //metal door - U
+  '64,74,104,255': 33, //metal door - D
 };
 
 export const FLOORTILES = [1, 7, 12];
-const LOCKEDTILES = [20, 21, 24, 29, 30]
+const LOCKEDTILES = [20, 21, 24, 29, 30, 31, 32, 33];
 
 const tileImgIDs = [
   "tile0",
@@ -70,13 +72,16 @@ const tileImgIDs = [
   "register-closed",
   "container-red",
   "container-blue",
-  "metal-door",
+  "metal-door-l",
   "metal-dark",
   "water",
   "spawner-down",
   "spawner-up",
   "safe-closed",
   "register-closed",
+  "metal-door-r",
+  "metal-door-u",
+  "metal-door-d",
 ]
 
 /////////////////////////////
@@ -88,7 +93,7 @@ var collisionCanvas = document.getElementById('collisionCanvas');
 export const collisionctx = collisionCanvas.getContext('2d', { willReadFrequently: true });
 
 var floorCanvas = document.getElementById('floorCanvas');
-var floorctx = floorCanvas.getContext('2d');
+export const floorctx = floorCanvas.getContext('2d');
 
 ml_ctx.imageSmoothingEnabled = false;
 ml_ctx.webkitImageSmoothingEnabled = false;

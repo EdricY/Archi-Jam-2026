@@ -82,7 +82,7 @@ export class LockpickWindow {
               lockPickProgress++;
             }
           } else if (keys[keycode]) {
-            this.chambers[lockPickProgress].pulse();
+            this.chambers[lockPickProgress]?.pulse();
             lockPickProgress = 0;
             play_lock_picking_noise();
           }
@@ -98,7 +98,7 @@ export class LockpickWindow {
             play_lock_picking_noise();
           }
           else {
-            this.chambers[lockPickProgress].pulse();
+            this.chambers[lockPickProgress]?.pulse();
             lockPickProgress = 0;
             play_lock_picking_noise();
           }

@@ -17,7 +17,7 @@ const bullet = document.getElementById('bullet');
 
 var bulletSpread = .2;
 
-window.alarmTime = 1000
+window.alarmTime = 800
 window.alarm = 0;
 
 let aiDebug = false;
@@ -29,7 +29,7 @@ export const ENEMYIMGS = [
   document.getElementById("enemy_3")
 ]
 
-const flashlightGrad = document.getElementById("flashlight-gradient")
+export const flashlightGrad = document.getElementById("flashlight-gradient")
 
 
 const Actions = {
@@ -48,7 +48,7 @@ export class Enemy {
     this.timer = 30;
     this.theta = theta ?? (Math.random() * TAU - PI);
     this.thetaGoal = this.theta;
-    this.basespeed = 3;
+    this.basespeed = 2;
     this.animationFrame = 0;
     this.speed = this.basespeed;
     this.shootTimer = 0;
@@ -99,17 +99,16 @@ export class Enemy {
     let dx = player.x - this.x;
     let dy = player.y - this.y;
     let distSq = dx * dx + dy * dy;
-    if (distSq < 32 * 32 && !player.stealthy) { //bump!
+    if (distSq < 12 * 12 && !player.stealthy) { //bump!
       alarm = alarmTime;
       let dx = player.x - this.x;
       let dy = player.y - this.y;
       let theta = Math.atan2(dy, dx);
-      let bx = this.x;
-      let by = this.y;
       this.action = Actions.TURNING;
       this.thetaGoal = theta;
+      // hit player directly
       if (this.shootTimer <= 0) {
-        this.bullets.push(new Bullet(bx, by, theta));
+        hitPlayer();
         this.shootTimer = this.reloadTime;
       }
     }
@@ -154,7 +153,7 @@ export class Enemy {
       if (Math.abs(diff2) < Math.abs(diff)) diff = diff2;
       if (Math.abs(diff3) < Math.abs(diff)) diff = diff3;
 
-      let turnspeed = this.speed / 40;
+      let turnspeed = this.speed / 60;
       if (Math.abs(diff) > turnspeed) {
         this.theta += turnspeed * Math.sign(diff);
       } else {
@@ -172,7 +171,7 @@ export class Enemy {
       if (Math.abs(diff2) < Math.abs(diff)) diff = diff2;
       if (Math.abs(diff3) < Math.abs(diff)) diff = diff3;
 
-      let turnspeed = this.speed / 80;
+      let turnspeed = this.speed / 120;
       if (Math.abs(diff) > turnspeed) {
         this.theta += turnspeed * Math.sign(diff);
       }
@@ -263,7 +262,7 @@ export class Enemy {
     if (player.stealthy) return false;
 
     let angle = Math.atan2(dy, dx);
-    let diff1 = this.thetaGoal - this.theta;
+    let diff1 = this.theta - angle;
     let diff2 = diff1 - TAU;
     let diff3 = diff1 + TAU;
     let diff = diff1;
@@ -481,6 +480,14 @@ export class PFBullet {
   }
 }
 
+function hitPlayer() {
+  if (player.health > 0) {
+    Particles.explode(player.x, player.y, 'red', 20, 5);
+    play_injury_noise();
+    player.health -= 20;
+  }
+}
+
 export class Bullet {
   constructor(x, y, t) {
     this.x = x;
@@ -494,19 +501,15 @@ export class Bullet {
     this.bulletSpeed = 10;
   }
   update() {
+    if (this.intersectsPlayer()) {
+      hitPlayer();
+      this.update = null;
+      return;
+    }
     let vx = this.bulletSpeed * Math.cos(this.theta);
     let vy = this.bulletSpeed * Math.sin(this.theta);
     this.x += vx;
     this.y += vy;
-    if (this.intersectsPlayer()) {
-      if (player.health > 0) {
-        Particles.explode(player.x, player.y, 'red', 20, 5);
-        play_injury_noise();
-        player.health -= 20;
-      }
-      this.update = null;
-      return;
-    }
     let tile = getTileFromPos(mapData, this.x, this.y);
     if (FLOORTILES.includes(tile)) return;
     this.update = null;

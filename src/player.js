@@ -1,8 +1,10 @@
+import { flashlightGrad, TAU } from "./enemy";
 import { H, W } from "./gamesetup";
 import { Entrance } from "./interactives";
+import { Particles } from "./particles";
 import { moveObjBy } from "./slide";
 import { returnToLanding } from "./state";
-import { getTileFromPos } from "./tiles";
+import { floorctx, getTileFromPos } from "./tiles";
 
 
 const PI = Math.PI
@@ -128,19 +130,37 @@ export class Player {
       let collided = moveObjBy(this, this.theta, this.speed);
     }
 
-    //interactions
+    // interactions, select message to display
     this.actionTarget = closestInteractionObject(this);
-    let isEncumbered = this.inventory.length > 0;
-    if (isEncumbered && !(this.actionTarget instanceof Entrance)) return;
     if (this.actionTarget) {
       this.message = this.actionTarget.message;
-      if (keys[" "] && !lastKeys[" "]) {
+      let interactionBlocked = false;
+
+      // detect interaction blockers
+      if (this.actionTarget.kind == "entrance") {
+        if (alarm) {
+          this.message = "Alarm! Can't Leave!"
+          interactionBlocked = true;
+        }
+      } else if (this.actionTarget.kind == "safe" || this.actionTarget.kind == "register") {
+        let isEncumbered = this.inventory.length > 0;
+        if (isEncumbered) {
+          this.message = "Holding too much!"
+          interactionBlocked = true;
+        }
+      }
+
+      // do interaction if not blocked
+      if (!interactionBlocked && keys[" "] && !lastKeys[" "]) {
         this.message = "";
         this.actionTarget.interact();
       }
-    } else {
+
+    }
+    else {
       this.message = "";
     }
+
   }
 }
 
@@ -179,12 +199,17 @@ function drawPlayer(ctx, player) {
     playerctx.globalAlpha = 1;
     playerctx.globalCompositeOperation = 'source-over';
   }
+
   ctx.drawImage(playerCanvas, 0, 0)
+}
 
-
-  ctx.fillStyle = "black"
-  ctx.font = "14px serif"
-  ctx.fillText(player.message, f_x, f_y - PLAYERSIZE)
+export function drawInteractionTarget(ctx, player) {
+  if (!player.actionTarget) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.globalAlpha = .5;
+  ctx.drawImage(flashlightGrad, player.actionTarget.x - 16, player.actionTarget.y - 16, 32, 32);
+  ctx.restore();
 }
 
 function getLocalTiles(player) {
@@ -196,7 +221,7 @@ function getLocalTiles(player) {
 }
 
 function closestInteractionObject(player, reach = 32) {
-  let mindist = 1000000000;
+  let mindist = reach * reach;
   let closest = null;
   let len = interactionObjects.length;
   for (let i = 0; i < len; i++) {

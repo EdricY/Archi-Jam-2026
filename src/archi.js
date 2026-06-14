@@ -1,4 +1,5 @@
 import { Client } from "archipelago.js";
+import { addToWallet } from "./shop";
 
 const heist_jam_base_id = 2785000
 
@@ -7,7 +8,7 @@ export const item_name_to_id = {
   "World 3 Key": heist_jam_base_id + 1,
   "World 4 Key": heist_jam_base_id + 2,
   "World 5 Key": heist_jam_base_id + 3,
-  "Filler Item": heist_jam_base_id + 4,
+  "$200": heist_jam_base_id + 4,
 }
 
 export const location_name_to_id = {
@@ -49,12 +50,12 @@ archiClient.messages.on("message", (content) => {
   console.log(content);
 });
 
-archiClient.messages.on("item:received", (item) => {
-  console.log(`Received item: ${item.name} from ${item.player.alias}`);
-});
-
+const hasItemMemo = {}
 export function hasItem(itemName) {
-  return archiClient.items.received.some(x => x.name == itemName)
+  if (hasItemMemo[itemName]) return true;
+  let res = archiClient.items.received.some(x => x.name == itemName)
+  if (res) hasItemMemo[itemName] = true;
+  return res
 }
 
 export async function getItemNameAtLocation(locName) {

@@ -10,8 +10,6 @@ window.mapData = [];
 window.collisionMap = [];
 window.interactionObjects = [];
 
-window.walletAmt = 107;
-
 export const MAPIDS = [
   "map0",
   "map1",

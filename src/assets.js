@@ -24,7 +24,6 @@ export { map0, map1, map2, map3, map4, map5, map6, map7, map8, map9, map10, map1
 <img hidden id='woodb' src='resrc/woodb.png' alt='img'>
 <img hidden id='wood-door' src='resrc/Wood Door-1.png.png' alt='img'>
 <img hidden id='wood-door-down' src='resrc/wood-door-down.png' alt='img'>
-<img hidden id='metal-door' src='resrc/Metal Door-1.png.png' alt='img'>
 <img hidden id='counter' src='resrc/counter.png' alt='img'>
 <img hidden id='shelf-v' src='resrc/shelf-v.png' alt='img'>
 <img hidden id='shelf-h' src='resrc/shelf-h.png' alt='img'>

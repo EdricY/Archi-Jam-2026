@@ -1,3 +1,5 @@
+import { archiClient } from "./archi";
+
 const shopMessage = document.getElementById('shopMessage');
 
 
@@ -14,7 +16,7 @@ purchaseGuardAccuracybtn.onclick = purchaseGuardAccuracy;
 purchaseLockbtn.onclick = purchaseLock;
 
 function purchaseStamina() {
-  if (walletAmt < 500) {
+  if (window.walletAmt < 500) {
     shopMessage.innerHTML = "Not enough funds to buy more stamina!";
     return;
   }
@@ -22,10 +24,10 @@ function purchaseStamina() {
     shopMessage.innerHTML = "Max stamina reached!";
     return;
   }
-  walletAmt -= 500;
+  addToWallet(-500);
   maxStamina += 20;
   player.stamina = maxStamina;
-  document.getElementById("wallet").innerHTML = walletAmt;
+  document.getElementById("wallet").innerHTML = window.walletAmt;
 
 }
 
@@ -39,9 +41,9 @@ function purchaseGuardVision() {
     shopMessage.innerHTML = "Minimum Guard Vision reached!";
     return;
   }
-  walletAmt -= 500;
+  addToWallet(-500);
   VISRADIUS -= 10;
-  document.getElementById("wallet").innerHTML = walletAmt;
+  document.getElementById("wallet").innerHTML = window.walletAmt;
 
 }
 
@@ -54,10 +56,9 @@ function purchaseGuardAccuracy() {
     shopMessage.innerHTML = "Minimum Guard Accuracy reached!";
     return;
   }
-  walletAmt -= 500;
+  addToWallet(-500);
   bulletSpread += .05;
-  document.getElementById("wallet").innerHTML = walletAmt;
-
+  document.getElementById("wallet").innerHTML = window.walletAmt;
 }
 
 function purchaseHealth() {
@@ -69,10 +70,10 @@ function purchaseHealth() {
     shopMessage.innerHTML = "Max Health reached!";
     return;
   }
-  walletAmt -= 500;
+  addToWallet(-500);
   maxHealth += 20;
-  player.health = maxStamina;
-  document.getElementById("wallet").innerHTML = walletAmt;
+  player.health = maxHealth;
+  document.getElementById("wallet").innerHTML = window.walletAmt;
 }
 
 function purchaseLock() {
@@ -84,7 +85,23 @@ function purchaseLock() {
     shopMessage.innerHTML = "You already have that one!";
     return;
   }
-  walletAmt -= 1000;
+  addToWallet(-1000);
   onelesspin = true;
-  document.getElementById("wallet").innerHTML = walletAmt;
+  document.getElementById("wallet").innerHTML = window.walletAmt;
+}
+
+
+export function addToWallet(amount) {
+  window.walletAmt += amount;
+  localStorage.setItem(`${archiClient.room.seedName}wallet`, window.walletAmt);
+  document.getElementById("wallet").innerHTML = window.walletAmt;
+}
+
+export function loadWallet() {
+  if (localStorage.getItem(`${archiClient.room.seedName}wallet`)) {
+    window.walletAmt = parseInt(localStorage.getItem(`${archiClient.room.seedName}wallet`));
+  }
+  else {
+    window.walletAmt = 0;
+  }
 }
