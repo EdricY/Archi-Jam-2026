@@ -60,7 +60,7 @@ export function getInventoryString() {
     if (scoutDict.get(inv) == undefined) {
       scoutDict.set(inv, false);
       archiClient.scout([inv]).then((scout_items) => {
-        scoutDict.set(inv, scout_items[0]?.name);
+        scoutDict.set(inv, scout_items[0]?.name ?? "Unknown");
       })
     } else if (scoutDict.get(inv) == false) {
       s += "Unknown"

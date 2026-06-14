@@ -84,8 +84,8 @@ export class LockBox {
 
     if (onelesspin) this.pins--;
 
-    // this.lockpickWindow = new LockpickWindow(this.pins, this.callback);
-    this.lockpickWindow = new LockpickWindow(1, this.callback);
+    this.lockpickWindow = new LockpickWindow(this.pins, this.callback);
+    // this.lockpickWindow = new LockpickWindow(1, this.callback); for debug
   }
 
   interact() {
@@ -107,8 +107,11 @@ export class Entrance {
 
   interact() {
     if (window.alarm) return;
-    archiClient.check(...player.inventory)
+    archiClient.check(...player.inventory);
     if (player.inventory.length > 0) addToWallet(50);
+    if (player.inventory.includes(location_name_to_id["Level 15 Chest 2"])) {
+      archiClient.goal()
+    }
     player.inventory = []
     returnToLanding();
   }

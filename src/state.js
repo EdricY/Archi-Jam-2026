@@ -29,9 +29,9 @@ export const PLAYER_SPAWN_LOCATIONS = {
   9: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
   10: { x: 24 * TILE_OFFSET, y: 1 * TILE_OFFSET },
   11: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  12: { x: 1 * TILE_OFFSET, y: 28 * TILE_OFFSET },
+  12: { x: 4 * TILE_OFFSET, y: 30 * TILE_OFFSET },
   13: { x: 1 * TILE_OFFSET, y: 16 * TILE_OFFSET },
-  14: { x: 4 * TILE_OFFSET, y: 30 * TILE_OFFSET },
+  14: { x: 1 * TILE_OFFSET, y: 28 * TILE_OFFSET },
 };
 
 export const gameState = {
@@ -84,7 +84,7 @@ function handlePlayButtonClicked() {
       archiClient.items.on("itemsReceived", (items) => {
         for (let item of items) {
           console.log(`Received item: ${item.name} from ${item.sender.name}`);
-          if (item.name == "$200") {
+          if (item.name == "Filler: $200") {
             addToWallet(200);
           }
         }

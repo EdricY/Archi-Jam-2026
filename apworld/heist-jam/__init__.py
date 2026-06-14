@@ -23,7 +23,9 @@ class HeistJamWorld(World):
         "World 3 Key": heist_jam_base_id + 1,
         "World 4 Key": heist_jam_base_id + 2,
         "World 5 Key": heist_jam_base_id + 3,
-        "$200": heist_jam_base_id + 4,
+        "Filler: $200": heist_jam_base_id + 4,
+        "Sprint": heist_jam_base_id + 5,
+        "Stealth": heist_jam_base_id + 6,
     }
 
     location_name_to_id = {
@@ -65,14 +67,14 @@ class HeistJamWorld(World):
 
     def create_items(self) -> None:
         # Add the 4 world keys
-        for key in ["World 2 Key", "World 3 Key", "World 4 Key", "World 5 Key"]:
+        for key in self.item_name_to_id.keys():
             self.multiworld.itempool.append(self.create_item(key))
 
         # Add fillers to match locations
         location_count = len(self.multiworld.get_unfilled_locations(self.player))
         leftover = location_count - len(self.multiworld.itempool)
         for _ in range(leftover):
-            self.multiworld.itempool.append(self.create_item("$200"))
+            self.multiworld.itempool.append(self.create_item("Filler: $200"))
 
     def create_regions(self) -> None:
         menu = Region("Menu", self.player, self.multiworld)
@@ -150,6 +152,8 @@ class HeistJamWorld(World):
     def set_rules(self) -> None:
         add_rule(self.get_entrance("World 2 Entrance"),
             lambda state: state.has("World 2 Key", self.player))
+        add_rule(self.get_entrance("World 2 Entrance"),
+            lambda state: state.has("Sprint", self.player))
         add_rule(self.get_entrance("World 3 Entrance"),
             lambda state: state.has("World 3 Key", self.player))
         add_rule(self.get_entrance("World 4 Entrance"),

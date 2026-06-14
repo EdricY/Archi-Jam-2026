@@ -1,3 +1,4 @@
+import { hasItem } from "./archi";
 import { flashlightGrad, TAU } from "./enemy";
 import { H, W } from "./gamesetup";
 import { Entrance } from "./interactives";
@@ -77,7 +78,7 @@ export class Player {
       }
       return;
     }
-    if ((keys["z"] || keys["Shift"]) && this.stamina > 0) {
+    if ((keys["z"] || keys["Shift"]) && this.stamina > 0 && hasItem("Sprint")) {
       this.speedy = true;
       this.speed = this.basespeed * 1.5;
       // this.stamina--;
@@ -86,7 +87,7 @@ export class Player {
       this.speed = this.basespeed;
     }
 
-    if ((keys['x'] || keys["Control"]) && this.stamina > 0) {
+    if ((keys['x'] || keys["Control"]) && this.stamina > 0 && hasItem("Stealth")) {
       this.stealthy = true;
       this.stealthTimer++;
       this.stamina--;

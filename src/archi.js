@@ -8,7 +8,9 @@ export const item_name_to_id = {
   "World 3 Key": heist_jam_base_id + 1,
   "World 4 Key": heist_jam_base_id + 2,
   "World 5 Key": heist_jam_base_id + 3,
-  "$200": heist_jam_base_id + 4,
+  "Filler: $200": heist_jam_base_id + 4,
+  "Sprint": heist_jam_base_id + 5,
+  "Stealth": heist_jam_base_id + 6,
 }
 
 export const location_name_to_id = {
