@@ -9,7 +9,7 @@ const PI = Math.PI
 const safe_open = document.getElementById('safe-open');
 const register_open = document.getElementById('register-open');
 
-var onelesspin = false;
+window.onelesspin = false;
 
 export class LockBox {
   constructor(x, y, tileID) {

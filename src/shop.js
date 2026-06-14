@@ -10,7 +10,7 @@ const purchaseGuardAccuracybtn = document.getElementById("purchaseGuardAccuracyb
 const purchaseLockbtn = document.getElementById("purchaseLockbtn");
 
 purchaseStaminabtn.onclick = purchaseStamina;
-purchaseGuardVisionbtn.onclick = purchaseGuardVision;
+// purchaseGuardVisionbtn.onclick = purchaseGuardVision;
 purchaseHealthbtn.onclick = purchaseHealth;
 purchaseGuardAccuracybtn.onclick = purchaseGuardAccuracy;
 purchaseLockbtn.onclick = purchaseLock;

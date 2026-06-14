@@ -32,7 +32,7 @@ export function drawHUD(ctx) {
   ctx.fillStyle = "white";
   ctx.fillText("!", 30, 512 + 12 + 30 + 10)
 
-  ctx.fillText(`Holding: ${player.inventory.length > 0 ? getInventoryString() : "Nothing"}`, 400, 512 + 12 + 15)
+  ctx.fillText(`Holding: ${player.inventory.length > 0 ? getInventoryString() : "Nothing"}`, 430, 512 + 12 + 15)
 
   // ctx.strokeRect(W - 10 - alarmTime/5, 536, alarmTime/5, 15)
   // ctx.fillStyle = "red";

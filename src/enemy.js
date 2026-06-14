@@ -15,7 +15,7 @@ const BOUNCE = PHSZ + 10
 
 const bullet = document.getElementById('bullet');
 
-var bulletSpread = .2;
+window.bulletSpread = .2;
 
 window.alarmTime = 800
 window.alarm = 0;
