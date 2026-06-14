@@ -12,7 +12,8 @@ When picking a lock, use numbers 1-6 to guess the correct combination for the lo
 The position of the pin is a slight indicator for it's number.  
 Each number can only appear once in the combination.  
 If you're using a mechanical keyboard, check the "I have a cool keyboard" checkbox on the Instructions page for a more interesting lockpicking experience.  
-If you receive a World Key from archipelago and the levels don't unlock, try entering the Market and then returning to the levels landing.
+If you receive a World Key from archipelago and the levels don't unlock, try entering the Market and then returning to the levels landing.  
+Your Goal is to escape with the bottom treasure of the final level.  
 
 ## Archipelago Setup
 - Download the latest [Archipelago launcher](https://github.com/ArchipelagoMW/Archipelago/releases) (0.6.7+)
